@@ -52,7 +52,7 @@ class Game extends Phaser.Game {
   setupStats() {
     // Setup the new stats panel.
     const stats = new Stats();
-    document.body.appendChild(stats.dom);
+    // document.body.appendChild(stats.dom);
 
     // Monkey-patch the update loop so we can track the timing.
     const updateLoop = this.update;
