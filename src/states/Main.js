@@ -29,8 +29,6 @@ export default class Main extends Phaser.State {
       //   frame: 'car',
     });
 
-    // this.car = this.add.sprite(48, 48, 'car');
-
     this.physics.arcade.enable(this.car);
 
     // // Add background tile.
