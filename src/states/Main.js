@@ -26,7 +26,6 @@ export default class Main extends Phaser.State {
       y: 48, // this.game.world.centerY,
       key: 'car',
       cursors: this.input.keyboard.createCursorKeys(),
-      //   frame: 'car',
     });
 
     this.physics.arcade.enable(this.car);
@@ -57,12 +56,5 @@ export default class Main extends Phaser.State {
    */
   update() {
     this.physics.arcade.collide(this.car, this.layer);
-
-    //  Update our grid sensors
-    this.car.updateGridSensors(this.map, this.math);
-
-    this.car.checkKeys();
-
-    this.car.update();
   }
 }

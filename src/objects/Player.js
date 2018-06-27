@@ -21,6 +21,7 @@ export default class Player extends Phaser.Sprite {
     this.game.add.existing(this);
     this.anchor.setTo(0.5);
 
+    // The sprite's position in tile coordinates
     this.marker = new Phaser.Point();
     this.turnPoint = new Phaser.Point();
 
@@ -32,7 +33,6 @@ export default class Player extends Phaser.Sprite {
     this.gridsize = 32;
     this.safetile = 1;
 
-    this.directions = [null, null, null, null, null];
     this.opposites = [Phaser.NONE, Phaser.RIGHT, Phaser.LEFT, Phaser.DOWN, Phaser.UP];
 
     this.current = Phaser.UP;
@@ -64,14 +64,6 @@ export default class Player extends Phaser.Sprite {
    * @param turnTo
    */
   checkDirection(turnTo) {
-    if (this.turning === turnTo || this.directions[turnTo] === null
-      || this.directions[turnTo].index !== this.safetile) {
-      //  Invalid direction if they're already set to turn that way
-      //  Or there is no tile there, or the tile isn't index a floor tile
-      return;
-    }
-
-    //  Check if they want to turn around and can
     if (this.current === this.opposites[turnTo]) {
       this.move(turnTo);
     } else {
@@ -153,21 +145,19 @@ export default class Player extends Phaser.Sprite {
    *
    * @param map
    */
-  updateGridSensors(map) {
+  updateGridSensors() {
     this.marker.x = this.game.math.snapToFloor(Math.floor(this.x), this.gridsize) / this.gridsize;
     this.marker.y = this.game.math.snapToFloor(Math.floor(this.y), this.gridsize) / this.gridsize;
-
-    const layerIndex = 0; // FIXME - this should not be a const
-    this.directions[1] = map.getTileLeft(layerIndex, this.marker.x, this.marker.y);
-    this.directions[2] = map.getTileRight(layerIndex, this.marker.x, this.marker.y);
-    this.directions[3] = map.getTileAbove(layerIndex, this.marker.x, this.marker.y);
-    this.directions[4] = map.getTileBelow(layerIndex, this.marker.x, this.marker.y);
   }
 
   /**
    *
    */
   update() {
+    this.updateGridSensors();
+
+    this.checkKeys();
+
     if (this.turning !== Phaser.NONE) {
       this.turn();
     }
