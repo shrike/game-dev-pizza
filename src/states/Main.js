@@ -80,6 +80,7 @@ class Car {
     this.car = car;
     this.marker = new Phaser.Point();
     this.turnPoint = new Phaser.Point();
+    this.math = 
 
     this.cursors = cursors;
 
@@ -135,12 +136,10 @@ class Car {
     //  Check if they want to turn around and can
     if (this.current === this.opposites[turnTo])
     {
-      console.log("1111111111111111111")
       this.move(turnTo);
     }
     else
     {
-      console.log("2222222222")
       this.turning = turnTo;
 
         this.turnPoint.x = (this.marker.x * this.gridsize) + (this.gridsize / 2);
@@ -154,7 +153,8 @@ class Car {
       var cy = Math.floor(this.car.y);
 
       //  This needs a threshold, because at high speeds you can't turn because the coordinates skip past
-      if (!this.math.fuzzyEqual(cx, this.turnPoint.x, this.threshold) || !this.math.fuzzyEqual(cy, this.turnPoint.y, this.threshold))
+      if (!this.game.math.fuzzyEqual(cx, this.turnPoint.x, this.threshold) 
+            || !this.game.math.fuzzyEqual(cy, this.turnPoint.y, this.threshold))
       {
           return false;
       }
@@ -213,10 +213,10 @@ class Car {
       return "90";
   }
 
-  updateGridSensors(map, math) {
+  updateGridSensors(map) {
 
-    this.marker.x = math.snapToFloor(Math.floor(this.car.x), this.gridsize) / this.gridsize;
-    this.marker.y = math.snapToFloor(Math.floor(this.car.y), this.gridsize) / this.gridsize;
+    this.marker.x = this.game.math.snapToFloor(Math.floor(this.car.x), this.gridsize) / this.gridsize;
+    this.marker.y = this.game.math.snapToFloor(Math.floor(this.car.y), this.gridsize) / this.gridsize;
 
     var layerIndex = 0; //FIXME - this should not be a const
     this.directions[1] = map.getTileLeft(layerIndex, this.marker.x, this.marker.y);
