@@ -143,7 +143,7 @@ export default class Player extends Phaser.Sprite {
 
   /**
    *
-   * @param map
+   *
    */
   updateGridSensors() {
     this.marker.x = this.game.math.snapToFloor(Math.floor(this.x), this.gridsize) / this.gridsize;
