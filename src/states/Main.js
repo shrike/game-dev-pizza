@@ -21,19 +21,12 @@ export default class Main extends Phaser.State {
     // // Enable arcade physics.
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    this.safetile = 1;
-    this.gridsize = 32;
-
-    this.turnPoint = new Phaser.Point();
-
     this.car = this.add.sprite(48, 48, 'car');
     this.car.anchor.set(0.5);
 
     this.physics.arcade.enable(this.car);
 
-    this.player = new Car(this.car, this.input.keyboard.createCursorKeys());
-
-    this.player.move(Phaser.DOWN);
+    this.player = new Car(game, this.car, this.input.keyboard.createCursorKeys());
 
     // // Add background tile.
     // this.game.add.tileSprite(-5000, -5000, 10000, 10000, 'bg');
@@ -70,11 +63,8 @@ export default class Main extends Phaser.State {
     
     this.physics.arcade.collide(this.car, this.layer);
 
-    this.player.marker.x = this.math.snapToFloor(Math.floor(this.car.x), this.gridsize) / this.gridsize;
-    this.player.marker.y = this.math.snapToFloor(Math.floor(this.car.y), this.gridsize) / this.gridsize;
-
     //  Update our grid sensors
-    this.player.updateGridSensors(this.map);
+    this.player.updateGridSensors(this.map, this.math);
 
     this.player.checkKeys();
 
@@ -84,71 +74,78 @@ export default class Main extends Phaser.State {
 
 class Car {
 
-  constructor(car, cursors) {
+  constructor(game, car, cursors) {
 
+    this.game = game;
     this.car = car;
     this.marker = new Phaser.Point();
+    this.turnPoint = new Phaser.Point();
+
     this.cursors = cursors;
 
     this.speed = 150;
     this.threshold = 3;
     this.turnSpeed = 150;
+    this.gridsize = 32;
+    this.safetile = 1;
 
     this.directions = [ null, null, null, null, null ];
     this.opposites = [ Phaser.NONE, Phaser.RIGHT, Phaser.LEFT, Phaser.DOWN, Phaser.UP ];
 
     this.current = Phaser.UP;
     this.turning = Phaser.NONE;
+
+    this.move(Phaser.DOWN);
   }
   
   checkKeys() {
 
-      if (this.cursors.left.isDown && this.current !== Phaser.LEFT)
-      {
-          this.checkDirection(Phaser.LEFT);
-      }
-      else if (this.cursors.right.isDown && this.current !== Phaser.RIGHT)
-      {
-          this.checkDirection(Phaser.RIGHT);
-      }
-      else if (this.cursors.up.isDown && this.current !== Phaser.UP)
-      {
-          this.checkDirection(Phaser.UP);
-      }
-      else if (this.cursors.down.isDown && this.current !== Phaser.DOWN)
-      {
-          this.checkDirection(Phaser.DOWN);
-      }
-      else
-      {
-          //  This forces them to hold the key down to turn the corner
-          this.turning = Phaser.NONE;
-      }
-
+    if (this.cursors.left.isDown && this.current !== Phaser.LEFT)
+    {
+        this.checkDirection(Phaser.LEFT);
+    }
+    else if (this.cursors.right.isDown && this.current !== Phaser.RIGHT)
+    {
+        this.checkDirection(Phaser.RIGHT);
+    }
+    else if (this.cursors.up.isDown && this.current !== Phaser.UP)
+    {
+        this.checkDirection(Phaser.UP);
+    }
+    else if (this.cursors.down.isDown && this.current !== Phaser.DOWN)
+    {
+        this.checkDirection(Phaser.DOWN);
+    }
+    else
+    {
+        //  This forces them to hold the key down to turn the corner
+        this.turning = Phaser.NONE;
+    }
   }
 
   checkDirection(turnTo) {
 
-      if (this.turning === turnTo || this.directions[turnTo] === null || this.directions[turnTo].index !== this.safetile)
-      {
-          //  Invalid direction if they're already set to turn that way
-          //  Or there is no tile there, or the tile isn't index a floor tile
-          return;
-      }
+    if (this.turning === turnTo || this.directions[turnTo] === null || this.directions[turnTo].index !== this.safetile)
+    {
+        //  Invalid direction if they're already set to turn that way
+        //  Or there is no tile there, or the tile isn't index a floor tile
+        return;
+    }
 
-      //  Check if they want to turn around and can
-      if (this.current === this.opposites[turnTo])
-      {
-          this.move(turnTo);
-      }
-      else
-      {
-          this.turning = turnTo;
+    //  Check if they want to turn around and can
+    if (this.current === this.opposites[turnTo])
+    {
+      console.log("1111111111111111111")
+      this.move(turnTo);
+    }
+    else
+    {
+      console.log("2222222222")
+      this.turning = turnTo;
 
-          this.turnPoint.x = (this.marker.x * this.gridsize) + (this.gridsize / 2);
-          this.turnPoint.y = (this.marker.y * this.gridsize) + (this.gridsize / 2);
-      }
-
+        this.turnPoint.x = (this.marker.x * this.gridsize) + (this.gridsize / 2);
+        this.turnPoint.y = (this.marker.y * this.gridsize) + (this.gridsize / 2);
+    }
   }
 
   turn() {
@@ -192,7 +189,7 @@ class Car {
           this.car.body.velocity.y = speed;
       }
 
-      // this.add.tween(this.car).to( { angle: this.getAngle(direction) }, this.turnSpeed, "Linear", true);
+      this.game.add.tween(this.car).to( { angle: this.getAngle(direction) }, this.turnSpeed, "Linear", true);
 
       this.current = direction;
   }
@@ -216,7 +213,10 @@ class Car {
       return "90";
   }
 
-  updateGridSensors(map) {
+  updateGridSensors(map, math) {
+
+    this.marker.x = math.snapToFloor(Math.floor(this.car.x), this.gridsize) / this.gridsize;
+    this.marker.y = math.snapToFloor(Math.floor(this.car.y), this.gridsize) / this.gridsize;
 
     var layerIndex = 0; //FIXME - this should not be a const
     this.directions[1] = map.getTileLeft(layerIndex, this.marker.x, this.marker.y);
