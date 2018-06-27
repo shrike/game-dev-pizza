@@ -1,16 +1,14 @@
-import throttle from 'lodash.throttle';
+// import throttle from 'lodash.throttle';
 import Player from '../objects/Player';
 
 /**
  * Setup and display the main game state.
  */
 export default class Main extends Phaser.State {
-
   /**
    * Setup all objects, etc needed for the main game state.
    */
   create() {
-
     this.map = this.add.tilemap('map');
     this.map.addTilesetImage('tiles', 'tiles');
 
@@ -23,14 +21,14 @@ export default class Main extends Phaser.State {
 
     // // Add a player to the game.
     this.car = new Player({
-        game: this.game,
-        x: 48, // this.game.world.centerX,
-        y: 48, //this.game.world.centerY,
-        key: 'car',
-        cursors: this.input.keyboard.createCursorKeys()
+      game: this.game,
+      x: 48, // this.game.world.centerX,
+      y: 48, // this.game.world.centerY,
+      key: 'car',
+      cursors: this.input.keyboard.createCursorKeys(),
       //   frame: 'car',
-      });
-  
+    });
+
     // this.car = this.add.sprite(48, 48, 'car');
 
     this.physics.arcade.enable(this.car);
@@ -40,7 +38,7 @@ export default class Main extends Phaser.State {
 
     // // ...
 
-    // // Setup listener for window resize.
+    // Setup listener for window resize.
     // window.addEventListener('resize', throttle(this.resize.bind(this), 50), false);
   }
 
@@ -50,7 +48,9 @@ export default class Main extends Phaser.State {
   resize() {
     // const width = window.innerWidth * window.devicePixelRatio;
     // const height = window.innerHeight * window.devicePixelRatio;
-
+    //
+    // console.log(width);
+    // console.log(height);
     // this.scale.setGameSize(width, height);
   }
 
@@ -58,7 +58,6 @@ export default class Main extends Phaser.State {
    * Handle actions in the main game loop.
    */
   update() {
-    
     this.physics.arcade.collide(this.car, this.layer);
 
     //  Update our grid sensors

@@ -8,7 +8,6 @@ export default class Boot extends Phaser.State {
    * Preload any assets needed for the preload state.
    */
   preload() {
-
     // this.load.baseURL = 'http://files.phaser.io.s3.amazonaws.com/codingtips/issue005/';
     this.load.baseURL = '';
     this.load.crossOrigin = 'anonymous';
@@ -22,7 +21,6 @@ export default class Boot extends Phaser.State {
    * Setup anything that is needed before the preload state begins.
    */
   create() {
-
     // Scale the game to fill the entire page.
     // this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 

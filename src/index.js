@@ -1,5 +1,4 @@
 import 'core-js/shim';
-import {Howl, Howler} from 'howler';
 import Stats from 'stats.js';
 import Boot from './states/Boot';
 import Preload from './states/Preload';
@@ -64,4 +63,5 @@ class Game extends Phaser.Game {
   }
 }
 
+/* eslint-disable no-new */
 new Game();
