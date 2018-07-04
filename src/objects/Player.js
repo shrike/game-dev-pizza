@@ -173,7 +173,7 @@ export default class Player extends Phaser.Sprite {
    *
    * @param map
    */
-  updateGridSensors() {
+  calcGridPosition() {
     this.marker.x = this.game.math.snapToFloor(Math.floor(this.x), this.gridsize) / this.gridsize;
     this.marker.y = this.game.math.snapToFloor(Math.floor(this.y), this.gridsize) / this.gridsize;
   }
@@ -182,7 +182,7 @@ export default class Player extends Phaser.Sprite {
    *
    */
   update() {
-    this.updateGridSensors();
+    this.calcGridPosition();
 
     this.checkKeys();
 
