@@ -28,6 +28,8 @@ export default class Player extends Phaser.Sprite {
     this.cursors = cursors;
 
     this.speed = 150;
+    // true if player is turning
+    this.animating = false;
     this.threshold = 3;
     this.turnSpeed = 150;
     this.gridsize = 32;
@@ -37,21 +39,26 @@ export default class Player extends Phaser.Sprite {
 
     this.current = Phaser.UP;
     this.turning = Phaser.NONE;
-
-    // this.move(Phaser.DOWN);
   }
 
   /**
    * Handle checks on keypress.
    */
   checkKeys() {
-    if (this.cursors.left.isDown && this.current !== Phaser.LEFT) {
+
+
+    if (!this.cursors.left.isDown &&
+      !this.cursors.right.isDown &&
+      !this.cursors.up.isDown &&
+      !this.cursors.down.isDown) {
+      this.stop();
+    } else if (this.cursors.left.isDown) {
       this.checkDirection(Phaser.LEFT);
-    } else if (this.cursors.right.isDown && this.current !== Phaser.RIGHT) {
+    } else if (this.cursors.right.isDown) {
       this.checkDirection(Phaser.RIGHT);
-    } else if (this.cursors.up.isDown && this.current !== Phaser.UP) {
+    } else if (this.cursors.up.isDown) {
       this.checkDirection(Phaser.UP);
-    } else if (this.cursors.down.isDown && this.current !== Phaser.DOWN) {
+    } else if (this.cursors.down.isDown) {
       this.checkDirection(Phaser.DOWN);
     } else {
       //  This forces them to hold the key down to turn the corner
@@ -64,12 +71,34 @@ export default class Player extends Phaser.Sprite {
    * @param turnTo
    */
   checkDirection(turnTo) {
+    if (this.animating) {
+      return;
+    }
+
+    let {speed} = this;
     if (this.current === this.opposites[turnTo]) {
       this.move(turnTo);
+    } if (turnTo === this.current) {
+
+      if (turnTo === Phaser.LEFT || turnTo === Phaser.UP) {
+        speed = -speed;
+      }
+
+      if (turnTo === Phaser.LEFT || turnTo === Phaser.RIGHT) {
+        this.body.velocity.x = speed;
+      } else {
+        this.body.velocity.y = speed;
+      }
     } else {
       this.turning = turnTo;
       this.turnPoint.x = (this.marker.x * this.gridsize) + (this.gridsize / 2);
       this.turnPoint.y = (this.marker.y * this.gridsize) + (this.gridsize / 2);
+
+      if (turnTo === Phaser.LEFT || turnTo === Phaser.RIGHT) {
+        this.body.velocity.x = speed;
+      } else {
+        this.body.velocity.y = speed;
+      }
     }
   }
 
@@ -78,15 +107,6 @@ export default class Player extends Phaser.Sprite {
    * @returns {boolean}
    */
   turn() {
-    const cx = Math.floor(this.x);
-    const cy = Math.floor(this.y);
-
-    //  This needs a threshold, because at high speeds you can't turn because the coordinates skip past
-    if (!this.game.math.fuzzyEqual(cx, this.turnPoint.x, this.threshold)
-            || !this.game.math.fuzzyEqual(cy, this.turnPoint.y, this.threshold)) {
-      return false;
-    }
-
     this.x = this.turnPoint.x;
     this.y = this.turnPoint.y;
 
@@ -99,6 +119,11 @@ export default class Player extends Phaser.Sprite {
     return true;
   }
 
+  stop() {
+    this.body.velocity.x = 0;
+    this.body.velocity.y = 0;
+  }
+
   /**
    * Move to direction.
    * @param direction string Direction
@@ -106,17 +131,23 @@ export default class Player extends Phaser.Sprite {
   move(direction) {
     let {speed} = this;
 
+    this.animating = true;
     if (direction === Phaser.LEFT || direction === Phaser.UP) {
       speed = -speed;
     }
 
     if (direction === Phaser.LEFT || direction === Phaser.RIGHT) {
       this.body.velocity.x = speed;
+      this.body.velocity.y = 0;
     } else {
       this.body.velocity.y = speed;
+      this.body.velocity.x = 0;
     }
-
-    this.game.add.tween(this).to({ angle: this.getAngle(direction) }, this.turnSpeed, 'Linear', true);
+    this.game.add.tween(this)
+      .to({angle: this.getAngle(direction)}, this.turnSpeed, 'Linear', true)
+      .onComplete.addOnce(() => {
+        this.animating = false;
+      });
     this.current = direction;
   }
 
@@ -137,7 +168,6 @@ export default class Player extends Phaser.Sprite {
           (this.current === Phaser.RIGHT && to === Phaser.UP)) {
       return '-90';
     }
-
     return '90';
   }
 
