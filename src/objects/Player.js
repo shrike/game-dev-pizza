@@ -45,8 +45,6 @@ export default class Player extends Phaser.Sprite {
    * Handle checks on keypress.
    */
   checkKeys() {
-
-
     if (!this.cursors.left.isDown &&
       !this.cursors.right.isDown &&
       !this.cursors.up.isDown &&
