@@ -33,9 +33,11 @@ export default class Main extends Phaser.State {
     // // Add a player to the game.
     this.player = new Player({
       game: this.game,
+      key: 'player',
+      map: this.map,
+      isTileFree: this.isTileFree,
       x: 96, // this.game.world.centerX,
       y: 96, // this.game.world.centerY,
-      key: 'player',
       cursors: this.input.keyboard.createCursorKeys(),
     });
 
@@ -60,6 +62,19 @@ export default class Main extends Phaser.State {
 
     // Setup listener for window resize.
     // window.addEventListener('resize', throttle(this.resize.bind(this), 50), false);
+  }
+
+  /**
+   * Resize the game to fit the window.
+   */
+  isTileFree(tileX, tileY) {
+    if (this.map.getTile(tileX, tileY, this.bricksLayer) > 0) {
+      return false;
+    }
+    if (this.map.getTile(tileX, tileY, this.stonesLayer) > 0) {
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -118,16 +133,14 @@ export default class Main extends Phaser.State {
   update() {
     this.physics.arcade.collide(this.player, this.stonesLayer);
     this.physics.arcade.collide(this.player, this.bricksLayer);
-   // this.physics.arcade.collide(this.car, this.group);
+    // this.physics.arcade.collide(this.car, this.group);
     if (this.aKey.isDown && !this.bombPlaced) {
       this.bombs.push(this.addBomb(this.player.x, this.player.y, this.bombs.length));
       this.bombPlaced = true;
     }
-
     if (this.aKey.isUp) {
       this.bombPlaced = false;
     }
-
     this.bombs.map((bomb) => {
       this.physics.arcade.collide(this.player, bomb);
 

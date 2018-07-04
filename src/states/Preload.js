@@ -21,6 +21,9 @@ export default class Preload extends Phaser.State {
     this.game.load.crossOrigin = 'anonymous';
     this.game.load.maxParallelDownloads = Infinity;
 
+    this.game.physics.arcade.TILE_BIAS = 0;
+    this.game.physics.arcade.OVERLAP_BIAS = 0;
+
     // Begin loading all of the assets.
     this.game.plugins.add(WebpackLoader, AssetManifest, postfix)
       .load()
