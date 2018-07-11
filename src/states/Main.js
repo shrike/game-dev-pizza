@@ -24,7 +24,6 @@ export default class Main extends Phaser.State {
 
     this.bombs = [];
     this.bombPlaced = false;
-    this.layer = this.map.createLayer('Tile Layer 1');
 
     this.backgroundLayer = this.map.createLayer('background');
     this.stonesLayer = this.map.createLayer('stones');
