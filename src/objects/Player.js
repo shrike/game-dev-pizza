@@ -34,10 +34,6 @@ export default class Player extends Phaser.Sprite {
     this.speed = 150;
     this.turned = false;
     this.turning = false;
-    this.threshold = 3;
-    this.turnSpeed = 150;
-    this.gridsize = 64;
-    this.safetile = 1;
 
     this.opposites = [Phaser.NONE, Phaser.RIGHT, Phaser.LEFT, Phaser.DOWN, Phaser.UP];
     this.directions = [Phaser.NONE, Phaser.ANGLE_LEFT, Phaser.ANGLE_RIGHT, Phaser.ANGLE_UP,
@@ -79,8 +75,8 @@ export default class Player extends Phaser.Sprite {
     }
 
     if (this.current !== this.opposites[direction]) {
-      this.body.x = this.marker.x * this.gridsize;
-      this.body.y = this.marker.y * this.gridsize;
+      this.body.x = this.marker.x * this.map.gridsize;
+      this.body.y = this.marker.y * this.map.gridsize;
     }
 
     this.turning = true;
@@ -163,8 +159,10 @@ export default class Player extends Phaser.Sprite {
    *
    */
   calcGridPosition() {
-    this.marker.x = this.game.math.snapToFloor(Math.floor(this.x), this.gridsize) / this.gridsize;
-    this.marker.y = this.game.math.snapToFloor(Math.floor(this.y), this.gridsize) / this.gridsize;
+    this.marker.x = this.game.math.snapToFloor(Math.floor(this.x), this.map.gridsize)
+      / this.map.gridsize;
+    this.marker.y = this.game.math.snapToFloor(Math.floor(this.y), this.map.gridsize)
+      / this.map.gridsize;
   }
 
   /**

@@ -18,6 +18,7 @@ export default class Main extends Phaser.State {
    */
   create() {
     this.map = this.add.tilemap('map');
+    this.map.gridsize = 64;
     this.map.addTilesetImage('tiles', 'tiles');
 
     this.group = this.game.add.group();
