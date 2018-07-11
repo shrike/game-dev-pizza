@@ -19,6 +19,9 @@ export default class Main extends Phaser.State {
   create() {
     this.map = this.add.tilemap('map');
     this.map.gridsize = 64;
+    this.map.gridToPixelCoord = gridCoordinate => (gridCoordinate + 0.5) * 64;
+    this.map.gridToPixelPoint =
+        point => new Phaser.Point((point.x + 0.5) * 64, (point.y + 0.5) * 64);
     this.map.addTilesetImage('tiles', 'tiles');
 
     this.group = this.game.add.group();
