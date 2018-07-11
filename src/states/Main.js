@@ -46,24 +46,9 @@ export default class Main extends Phaser.State {
       cursors: this.input.keyboard.createCursorKeys(),
     });
 
-
-    // this.bomb = new Player({
-    //   game: this.game,
-    //   x: -48, // this.game.world.centerX,
-    //   y: -48, // this.game.world.centerY,
-    //   key: 'bomb',
-    //   cursors: this.input.keyboard.createCursorKeys(),
-    // });
-
     this.physics.arcade.enable(this.player);
 
     this.aKey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
-
-   // this.physics.arcade.enable(this.bomb);
-    // // Add background tile.
-    // this.game.add.tileSprite(-5000, -5000, 10000, 10000, 'bg');
-
-    // // ...
 
     // Setup listener for window resize.
     // window.addEventListener('resize', throttle(this.resize.bind(this), 50), false);
@@ -79,6 +64,7 @@ export default class Main extends Phaser.State {
     if (this.map.getTile(tileX, tileY, this.stonesLayer)) {
       return false;
     }
+    // TODO - check if a bomb is in tileX, tileY
     return true;
   }
 
@@ -107,9 +93,6 @@ export default class Main extends Phaser.State {
       key: 'bomb',
       id,
     });
-    //this.group.add(bomb);
-
-
     this.game.physics.arcade.enable(bomb);
     this.game.time.events.add(Phaser.Timer.SECOND * 4, () => this.explode(bomb), this);
 
@@ -128,8 +111,6 @@ export default class Main extends Phaser.State {
       y: bomb.y, // this.game.world.centerY,
       key: 'bomb.exploded',
     });
-
-    console.log(this.bombs);
   }
 
   /**

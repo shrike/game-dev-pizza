@@ -9,7 +9,7 @@ export default class Player extends Phaser.Sprite {
    *
    * @param game
    * @param map
-   * @param layer
+   * @param isTileFree
    * @param x
    * @param y
    * @param key
