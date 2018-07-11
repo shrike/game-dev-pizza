@@ -15,6 +15,7 @@ export default class Boot extends Phaser.State {
     this.load.tilemap('map', 'assets/maze.json', null, Phaser.Tilemap.TILED_JSON);
     this.load.image('tiles', 'assets/tiles.png');
     this.load.image('car', 'assets/car.png');
+    this.load.image('bomb', 'assets/bomb.png');
   }
 
   /**
