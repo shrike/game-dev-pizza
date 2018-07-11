@@ -42,6 +42,7 @@ export default class Player extends Phaser.Sprite {
     this.opposites = [Phaser.NONE, Phaser.RIGHT, Phaser.LEFT, Phaser.DOWN, Phaser.UP];
     this.directions = [Phaser.NONE, Phaser.ANGLE_LEFT, Phaser.ANGLE_RIGHT, Phaser.ANGLE_UP,
       Phaser.ANGLE_DOWN];
+    this.pressedButtons = [false, false, false, false, false];
 
     this.current = Phaser.RIGHT;
   }
@@ -70,11 +71,11 @@ export default class Player extends Phaser.Sprite {
    */
   turn(direction) {
     if (this.turning || !this.canTurn(direction)) {
-      return;
+      return false;
     }
 
     if (direction === this.current) {
-      return;
+      return false;
     }
 
     if (this.current !== this.opposites[direction]) {
@@ -84,47 +85,33 @@ export default class Player extends Phaser.Sprite {
 
     this.turning = true;
     this.turned = true;
-
     this.turning = false;
     this.current = direction;
     this.angle = this.directions[direction];
-
-    // this.game.add.tween(this)
-    //   .to({angle: this.getAngle(direction)}, null, null, null)
-    //   .onComplete.addOnce(() => {
-    //     this.turning = false;
-    //     this.current = direction;
-    //   });
+    return true;
   }
 
   /**
    *
    */
   move() {
-    let direction = null;
-
-    if (!this.cursors.left.isDown && !this.cursors.right.isDown &&
-        !this.cursors.up.isDown && !this.cursors.down.isDown) {
-      // not pressing any movement keys!
+    // if button pressed in new direction - check if we can turn
+    if (this.cursors.left.isDown && this.current !== Phaser.LEFT && !this.turned &&
+      this.turn(Phaser.LEFT)) {
+      ;
+    } else if (this.cursors.right.isDown && this.current !== Phaser.RIGHT && !this.turned &&
+      this.turn(Phaser.RIGHT)) {
+      ;
+    } else if (this.cursors.up.isDown && this.current !== Phaser.UP && !this.turned &&
+      this.turn(Phaser.UP)) {
+      ;
+    } else if (this.cursors.down.isDown && this.current !== Phaser.DOWN && !this.turned &&
+      this.turn(Phaser.DOWN)) {
+      ;
+    } else if (!this.pressedButtons[this.current]) {
+      // else if button is pressed in current direction - continue, else stop
       this.stop();
       return;
-    }
-
-    // check for new direction request (holding down left while moving down)
-    if (!this.turned) {
-      if (this.cursors.left.isDown && this.current !== Phaser.LEFT) {
-        direction = Phaser.LEFT;
-      } else if (this.cursors.right.isDown && this.current !== Phaser.RIGHT) {
-        direction = Phaser.RIGHT;
-      } else if (this.cursors.up.isDown && this.current !== Phaser.UP) {
-        direction = Phaser.UP;
-      } else if (this.cursors.down.isDown && this.current !== Phaser.DOWN) {
-        direction = Phaser.DOWN;
-      }
-
-      if (direction) {
-        this.turn(direction);
-      }
     }
 
     if (this.current === Phaser.LEFT) {
@@ -183,20 +170,24 @@ export default class Player extends Phaser.Sprite {
   /**
    *
    */
-  resetButtons() {
+  checkButtons() {
     if (this.cursors.down.justDown ||
       this.cursors.up.justDown ||
       this.cursors.left.justDown ||
       this.cursors.right.justDown) {
       this.turned = false;
     }
+    this.pressedButtons[Phaser.LEFT] = this.cursors.left.isDown;
+    this.pressedButtons[Phaser.RIGHT] = this.cursors.right.isDown;
+    this.pressedButtons[Phaser.UP] = this.cursors.up.isDown;
+    this.pressedButtons[Phaser.DOWN] = this.cursors.down.isDown;
   }
 
   /**
    *
    */
   update() {
-    this.resetButtons();
+    this.checkButtons();
     this.calcGridPosition();
     this.move();
   }
