@@ -4,7 +4,7 @@
 /**
  * Setup and control base player.
  */
-export default class Bomb extends Phaser.Sprite {
+export default class Explosion extends Phaser.Sprite {
   /**
    *
    * @param game

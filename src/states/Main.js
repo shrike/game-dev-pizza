@@ -1,6 +1,7 @@
 // import throttle from 'lodash.throttle';
 import Player from '../objects/Player';
 import Bomb from '../objects/Bomb';
+import Explosion from '../objects/Explosion';
 
 /**
  * Setup and display the main game state.
@@ -16,6 +17,8 @@ export default class Main extends Phaser.State {
     this.group = this.game.add.group();
 
     this.bombs = [];
+    this.bombPlaced = false;
+    this.layer = this.map.createLayer('Tile Layer 1');
 
     this.backgroundLayer = this.map.createLayer('background');
     this.stonesLayer = this.map.createLayer('stones');
@@ -47,8 +50,6 @@ export default class Main extends Phaser.State {
 
     this.physics.arcade.enable(this.player);
 
-
-
     this.aKey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
 
    // this.physics.arcade.enable(this.bomb);
@@ -78,21 +79,37 @@ export default class Main extends Phaser.State {
    * @param x
    * @param y
    */
-  addBomb(x, y) {
+  addBomb(x, y, id) {
     const bomb = new Bomb({
       game: this.game,
       x, // this.game.world.centerX,
       y, // this.game.world.centerY,
       key: 'bomb',
+      id,
     });
     //this.group.add(bomb);
 
 
     this.game.physics.arcade.enable(bomb);
-
-
+    this.game.time.events.add(Phaser.Timer.SECOND * 4, () => this.explode(bomb), this);
 
     return bomb;
+  }
+
+  explode(bomb) {
+    bomb.destroy();
+    this.bombs = this.bombs.filter((aBomb) => {
+      return aBomb.id !== bomb.id;
+    });
+
+    const explosion = new Explosion({
+      game: this.game,
+      x: bomb.x, // this.game.world.centerX,
+      y: bomb.y, // this.game.world.centerY,
+      key: 'bomb.exploded',
+    });
+
+    console.log(this.bombs);
   }
 
   /**
@@ -101,10 +118,14 @@ export default class Main extends Phaser.State {
   update() {
     this.physics.arcade.collide(this.player, this.stonesLayer);
     this.physics.arcade.collide(this.player, this.bricksLayer);
+   // this.physics.arcade.collide(this.car, this.group);
+    if (this.aKey.isDown && !this.bombPlaced) {
+      this.bombs.push(this.addBomb(this.player.x, this.player.y, this.bombs.length));
+      this.bombPlaced = true;
+    }
 
-    // this.physics.arcade.collide(this.player, this.group);
-    if (this.aKey.isDown) {
-      this.bombs.push(this.addBomb(this.player.x, this.player.y));
+    if (this.aKey.isUp) {
+      this.bombPlaced = false;
     }
 
     this.bombs.map((bomb) => {
