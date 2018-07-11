@@ -32,7 +32,7 @@ export default class Player extends Phaser.Sprite {
     this.animating = false;
     this.threshold = 3;
     this.turnSpeed = 150;
-    this.gridsize = 32;
+    this.gridsize = 64;
     this.safetile = 1;
 
     this.opposites = [Phaser.NONE, Phaser.RIGHT, Phaser.LEFT, Phaser.DOWN, Phaser.UP];

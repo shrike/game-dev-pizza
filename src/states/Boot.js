@@ -12,9 +12,9 @@ export default class Boot extends Phaser.State {
     this.load.baseURL = '';
     this.load.crossOrigin = 'anonymous';
 
-    this.load.tilemap('map', 'assets/maze.json', null, Phaser.Tilemap.TILED_JSON);
+    this.load.tilemap('map', 'assets/tiles.json', null, Phaser.Tilemap.TILED_JSON);
     this.load.image('tiles', 'assets/tiles.png');
-    this.load.image('car', 'assets/car.png');
+    this.load.image('player', 'assets/creep_tri_c1.png');
     this.load.image('bomb', 'assets/bomb.png');
   }
 

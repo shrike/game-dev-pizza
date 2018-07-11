@@ -11,11 +11,11 @@ export default class Preload extends Phaser.State {
   create() {
     // Determine which postfix to use on the assets based on the DPI.
     let postfix = '';
-    if (window.devicePixelRatio >= 3) {
+    /*if (window.devicePixelRatio >= 3) {
       postfix = '@3x';
     } else if (window.devicePixelRatio > 1) {
       postfix = '@2x';
-    }
+    }*/
 
     // Fix CORS issues with the loader and allow for unlimited parallel downloads.
     this.game.load.crossOrigin = 'anonymous';

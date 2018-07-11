@@ -16,19 +16,23 @@ export default class Main extends Phaser.State {
     this.group = this.game.add.group();
 
     this.bombs = [];
-    this.layer = this.map.createLayer('Tile Layer 1');
 
-    this.map.setCollision(20, true, this.layer);
+    this.backgroundLayer = this.map.createLayer('background');
+    this.stonesLayer = this.map.createLayer('stones');
+    this.bricksLayer = this.map.createLayer('bricks');
+
+    this.map.setCollision(4, true, this.stonesLayer);
+    this.map.setCollision(3, true, this.bricksLayer);
 
     // // Enable arcade physics.
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
     // // Add a player to the game.
-    this.car = new Player({
+    this.player = new Player({
       game: this.game,
-      x: 48, // this.game.world.centerX,
-      y: 48, // this.game.world.centerY,
-      key: 'car',
+      x: 96, // this.game.world.centerX,
+      y: 96, // this.game.world.centerY,
+      key: 'player',
       cursors: this.input.keyboard.createCursorKeys(),
     });
 
@@ -41,7 +45,7 @@ export default class Main extends Phaser.State {
     //   cursors: this.input.keyboard.createCursorKeys(),
     // });
 
-    this.physics.arcade.enable(this.car);
+    this.physics.arcade.enable(this.player);
 
 
 
@@ -95,14 +99,16 @@ export default class Main extends Phaser.State {
    * Handle actions in the main game loop.
    */
   update() {
-    this.physics.arcade.collide(this.car, this.layer);
-   // this.physics.arcade.collide(this.car, this.group);
+    this.physics.arcade.collide(this.player, this.stonesLayer);
+    this.physics.arcade.collide(this.player, this.bricksLayer);
+
+    // this.physics.arcade.collide(this.player, this.group);
     if (this.aKey.isDown) {
-      this.bombs.push(this.addBomb(this.car.x, this.car.y));
+      this.bombs.push(this.addBomb(this.player.x, this.player.y));
     }
 
     this.bombs.map((bomb) => {
-      this.physics.arcade.collide(this.car, bomb);
+      this.physics.arcade.collide(this.player, bomb);
 
       return bomb;
     });

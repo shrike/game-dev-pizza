@@ -1,9 +1,11 @@
 const AssetManifest = {
   sprites: [
-    'textures.png',
+    'tiles.png',
+    'tiles.json',
   ],
   images: [
-    'bg.png',
+    'creep_tri_c1.png',
+    'bomb.png',
   ],
   fonts: {
     google: {
