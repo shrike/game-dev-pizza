@@ -114,6 +114,8 @@ export default class Main extends Phaser.State {
       x: bomb.x, // this.game.world.centerX,
       y: bomb.y, // this.game.world.centerY,
       key: 'bomb.exploded',
+      isTileFree: this.isTileFree,
+
     });
   }
 
