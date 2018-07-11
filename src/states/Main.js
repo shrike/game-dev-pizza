@@ -7,6 +7,12 @@ import Explosion from '../objects/Explosion';
  * Setup and display the main game state.
  */
 export default class Main extends Phaser.State {
+
+  constructor() {
+    super();
+    this.isTileFree = this.isTileFree.bind(this);
+  }
+
   /**
    * Setup all objects, etc needed for the main game state.
    */
@@ -68,10 +74,10 @@ export default class Main extends Phaser.State {
    * Resize the game to fit the window.
    */
   isTileFree(tileX, tileY) {
-    if (this.map.getTile(tileX, tileY, this.bricksLayer) > 0) {
+    if (this.map.getTile(tileX, tileY, this.bricksLayer)) {
       return false;
     }
-    if (this.map.getTile(tileX, tileY, this.stonesLayer) > 0) {
+    if (this.map.getTile(tileX, tileY, this.stonesLayer)) {
       return false;
     }
     return true;
