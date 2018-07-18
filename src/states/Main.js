@@ -154,7 +154,6 @@ export default class Main extends Phaser.State {
       isTileFree: this.isTileFree,
       removeTile: this.removeTile,
       map: this.map,
-
     });
 
     this.game.time.events.add(Phaser.Timer.SECOND * 2, () => explosion.destroy(true), this);

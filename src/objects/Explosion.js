@@ -15,7 +15,7 @@ export default class Explosion extends Phaser.Sprite {
    * @param frame
    * @param cursors
    */
-  constructor({game, x, y, key, frame, id, isTileFree, removeTile, map}) {
+  constructor({game, x, y, key, frame, isTileFree, removeTile, map}) {
     super(game, x, y, key, frame);
 
     // Add the sprite to the game.
