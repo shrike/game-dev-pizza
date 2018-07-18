@@ -15,23 +15,22 @@ export default class Explosion extends Phaser.Sprite {
    * @param frame
    * @param cursors
    */
-  constructor({game, x, y, key, frame, id, isTileFree, removeTile, isTileRemovable}) {
+  constructor({game, x, y, key, frame, id, isTileFree, removeTile, isTileRemovable, map}) {
     super(game, x, y, key, frame);
 
     // Add the sprite to the game.
     this.game.add.existing(this);
+    this.map = map;
     this.anchor.setTo(0.5);
     this.marker = new Phaser.Point();
-    this.marker.x = x;
-    this.marker.y = y;
+    this.marker.x = map.pixelToGridCoord(x);
+    this.marker.y = map.pixelToGridCoord(y);
     this.id = id;
-    this.gridsize = 64;
+    this.gridsize = map.gridsize;
     this.isTileFree = isTileFree;
     this.removeTile = removeTile;
     this.tail = [];
     this.isTileRemovable = isTileRemovable;
-    this.calcGridPosition();
-
     this.expand();
   }
 
@@ -124,21 +123,12 @@ export default class Explosion extends Phaser.Sprite {
    * @returns {Fire}
    */
   addFire(x, y) {
-    return new Fire({
-      game: this.game,
+    return new Fire({game: this.game,
       x: (x + 0.5) * this.gridsize, // this.game.world.centerX,
       y: (y + 0.5) * this.gridsize, // this.game.world.centerY,
-      key: 'bomb.exploded'
-    });
+      key: 'bomb.exploded'});
   }
 
-  /**
-   * Calculate px to grid.
-   */
-  calcGridPosition() {
-    this.marker.x = this.game.math.snapToFloor(Math.floor(this.x), this.gridsize) / this.gridsize;
-    this.marker.y = this.game.math.snapToFloor(Math.floor(this.y), this.gridsize) / this.gridsize;
-  }
 
 
   /**
