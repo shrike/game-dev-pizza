@@ -22,6 +22,15 @@ export default class Main extends Phaser.State {
     this.map.gridToPixelCoord = gridCoordinate => (gridCoordinate + 0.5) * 64;
     this.map.gridToPixelPoint =
         point => new Phaser.Point((point.x + 0.5) * 64, (point.y + 0.5) * 64);
+    this.map.pixelToGridCoord = function(val) {
+      return this.game.math.snapToFloor(Math.floor(val), this.gridsize) / this.gridsize;
+    };
+    this.map.pixelToGrid = function(point) {
+      return new Phaser.Point(
+        this.game.math.snapToFloor(Math.floor(point.x), this.gridsize) / this.gridsize,
+        this.game.math.snapToFloor(Math.floor(point.y), this.gridsize) / this.gridsize);
+    };
+
     this.map.addTilesetImage('tiles', 'tiles');
 
     this.group = this.game.add.group();
@@ -70,7 +79,7 @@ export default class Main extends Phaser.State {
     if (this.map.getTile(tileX, tileY, this.stonesLayer)) {
       return false;
     }
-    if (this.bombs.some(bomb => bomb.marker.x === tileX && bomb.marker.Y === tileY)) {
+    if (this.bombs.some(bomb => bomb.marker.x === tileX && bomb.marker.y === tileY)) {
       return false;
     }
     return true;
@@ -96,8 +105,9 @@ export default class Main extends Phaser.State {
   addBomb(x, y, id) {
     const bomb = new Bomb({
       game: this.game,
-      x, // this.game.world.centerX,
-      y, // this.game.world.centerY,
+      map: this.map,
+      x,
+      y,
       key: 'bomb',
       id,
     });
@@ -115,8 +125,8 @@ export default class Main extends Phaser.State {
 
     const explosion = new Explosion({
       game: this.game,
-      x: bomb.x, // this.game.world.centerX,
-      y: bomb.y, // this.game.world.centerY,
+      x: bomb.x,
+      y: bomb.y,
       key: 'bomb.exploded',
       isTileFree: this.isTileFree,
 

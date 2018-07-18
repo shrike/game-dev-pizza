@@ -6,23 +6,25 @@
  */
 export default class Bomb extends Phaser.Sprite {
   /**
-   *
    * @param game
+   * @param map
    * @param x
    * @param y
    * @param key
    * @param frame
    * @param cursors
    */
-  constructor({game, x, y, key, frame, id}) {
-    super(game, x, y, key, frame);
-
-    // Add the sprite to the game.
+  constructor({game, map, x, y, key, frame, id}) {
+    super(
+      game,
+      game.math.snapToFloor(x, map.gridsize) + (map.gridsize / 2),
+      game.math.snapToFloor(y, map.gridsize) + (map.gridsize / 2),
+      key,
+      frame
+    );
     this.game.add.existing(this);
     this.anchor.setTo(0.5);
-    this.marker = new Phaser.Point();
-    this.marker.x = x;
-    this.marker.y = y;
+    this.marker = map.pixelToGrid(this);
     this.id = id;
   }
 
