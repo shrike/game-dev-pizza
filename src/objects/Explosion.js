@@ -1,6 +1,7 @@
 /* eslint object-curly-newline: ["error", "never"] */
 /* eslint-env es6 */
 import Fire from '../objects/Fire';
+
 /**
  * Setup and control base player.
  */
@@ -35,22 +36,27 @@ export default class Explosion extends Phaser.Sprite {
   }
 
   expand() {
-    ['left', 'right', 'up', 'down'].map((position) => {
-      for (let c = 0; c <= 4; c++) {
-        if(position === 'left' && this.expandTaileft(c)) {
-          continue;
-        } else if(position === 'right' && this.expandTailRight(c)) {
-          continue;
-        } else if(position === 'up' && this.expandTailUp(c)) {
-          continue;
-        } else if(position === 'down' && this.expandTailDown(c)) {
-          continue;
-        }
-
-        break;
+    const blocked = {left: false,
+      right: false,
+      up: false,
+      down: false};
+    for (let c = 0; c <= 4; c++) {
+      if (!blocked.left) {
+        blocked.left = !this.expandTailX(-c);
       }
-      return 1;
-    });
+
+      if (!blocked.right) {
+        blocked.right = !this.expandTailX(c);
+      }
+
+      if (!blocked.up) {
+        blocked.up = !this.expandTailY(c);
+      }
+
+      if (!blocked.down) {
+        blocked.down = !this.expandTailY(-c);
+      }
+    }
 
 
   }
@@ -67,75 +73,43 @@ export default class Explosion extends Phaser.Sprite {
     super.destroy(destroyChildren);
   }
 
-  expandTailDown(step) {
-    let res = true;
-    if (!this.isTileFree(this.marker.x, this.marker.y + step)) {
-      res = this.removeTile(this.marker.x, this.marker.y + step);
-    }
-    if (res) {
-      const tail = new Fire({
-        game: this.game,
-        x: (this.marker.x + 0.5) * this.gridsize, // this.game.world.centerX,
-        y: (this.marker.y + step + 0.5) * this.gridsize, // this.game.world.centerY,
-        key: 'bomb.exploded',
-      });
-
-      this.tail.push(tail);
-    }
-    return res;
-  }
-
-  expandTailUp(step) {
-    let res = true;
-    if (!this.isTileFree(this.marker.x, this.marker.y - step)) {
-      res = this.removeTile(this.marker.x, this.marker.y - step);
-    }
-    if (res) {
-      const tail = new Fire({
-        game: this.game,
-        x: (this.marker.x + 0.5) * this.gridsize, // this.game.world.centerX,
-        y: (this.marker.y - step + 0.5) * this.gridsize, // this.game.world.centerY,
-        key: 'bomb.exploded',
-
-      });
-      this.tail.push(tail);
-    }
-    return res;
-  }
-
-  expandTailRight(step) {
-    let res = true;
+  expandTailX(step) {
+    let tail;
     if (!this.isTileFree(this.marker.x + step, this.marker.y)) {
-      res = this.removeTile(this.marker.x + step, this.marker.y);
+      if (this.removeTile(this.marker.x + step, this.marker.y)) {
+        tail = this.addFire(this.marker.x + step, this.marker.y);
+        this.tail.push(tail);
+      }
+      return false;
     }
-    if (res) {
-      const tail = new Fire({
-        game: this.game,
-        x: (this.marker.x + step + 0.5) * this.gridsize, // this.game.world.centerX,
-        y: (this.marker.y + 0.5) * this.gridsize, // this.game.world.centerY,
-        key: 'bomb.exploded',
 
-      });
-      this.tail.push(tail);
-    }
-    return res;
+    tail = this.addFire(this.marker.x + step, this.marker.y);
+    this.tail.push(tail);
+
+    return true;
   }
 
-  expandTaileft(step) {
-    let res = true;
-    if (!this.isTileFree(this.marker.x - step, this.marker.y)) {
-      res = this.removeTile(this.marker.x - step, this.marker.y);
+  expandTailY(step) {
+    let tail;
+    if (!this.isTileFree(this.marker.x, this.marker.y + step)) {
+      if (this.removeTile(this.marker.x, this.marker.y + step)) {
+        tail = this.addFire(this.marker.x, this.marker.y + step);
+        this.tail.push(tail);
+      }
+      return false;
     }
-    if (res) {
-      const tail = new Fire({
-        game: this.game,
-        x: (this.marker.x - step + 0.5) * this.gridsize, // this.game.world.centerX,
-        y: (this.marker.y + 0.5) * this.gridsize, // this.game.world.centerY,
-        key: 'bomb.exploded',
-      });
-      this.tail.push(tail);
-    }
-    return res;
+
+    tail = this.addFire(this.marker.x, this.marker.y + step);
+    this.tail.push(tail);
+
+    return true;
+  }
+
+  addFire(x, y) {
+    return new Fire({game: this.game,
+      x: (x + 0.5) * this.gridsize, // this.game.world.centerX,
+      y: (y + 0.5) * this.gridsize, // this.game.world.centerY,
+      key: 'bomb.exploded'});
   }
 
   /**
@@ -145,7 +119,6 @@ export default class Explosion extends Phaser.Sprite {
     this.marker.x = this.game.math.snapToFloor(Math.floor(this.x), this.gridsize) / this.gridsize;
     this.marker.y = this.game.math.snapToFloor(Math.floor(this.y), this.gridsize) / this.gridsize;
   }
-
 
 
   /**
