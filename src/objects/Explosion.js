@@ -15,22 +15,19 @@ export default class Explosion extends Phaser.Sprite {
    * @param frame
    * @param cursors
    */
-  constructor({game, x, y, key, frame, id, isTileFree, removeTile, isTileRemovable, map}) {
+  constructor({game, x, y, key, frame, id, isTileFree, removeTile, map}) {
     super(game, x, y, key, frame);
 
     // Add the sprite to the game.
     this.game.add.existing(this);
-    this.map = map;
     this.anchor.setTo(0.5);
     this.marker = new Phaser.Point();
     this.marker.x = map.pixelToGridCoord(x);
     this.marker.y = map.pixelToGridCoord(y);
-    this.id = id;
     this.gridsize = map.gridsize;
     this.isTileFree = isTileFree;
     this.removeTile = removeTile;
     this.tail = [];
-    this.isTileRemovable = isTileRemovable;
     this.expand();
   }
 
@@ -67,7 +64,7 @@ export default class Explosion extends Phaser.Sprite {
    */
   destroy(destroyChildren) {
     this.tail.map((part) => {
-      part.destroy();
+      part.destroy(destroyChildren);
       return true;
     });
 
@@ -128,8 +125,6 @@ export default class Explosion extends Phaser.Sprite {
       y: (y + 0.5) * this.gridsize, // this.game.world.centerY,
       key: 'bomb.exploded'});
   }
-
-
 
   /**
    * Update loop.

@@ -153,7 +153,6 @@ export default class Main extends Phaser.State {
       key: 'bomb.exploded',
       isTileFree: this.isTileFree,
       removeTile: this.removeTile,
-      isTileRemovable: this.isTileRemovable,
       map: this.map,
 
     });
