@@ -3,7 +3,7 @@
 import Fire from '../objects/Fire';
 
 /**
- * Setup and control base player.
+ * Setup and control bomb explosion.
  */
 export default class Explosion extends Phaser.Sprite {
   /**
@@ -35,12 +35,15 @@ export default class Explosion extends Phaser.Sprite {
     this.expand();
   }
 
+  /**
+   * Expands the current explosion.
+   */
   expand() {
     const blocked = {left: false,
       right: false,
       up: false,
       down: false};
-    for (let c = 0; c <= 4; c++) {
+    for (let c = 0; c <= 4; c += 1) {
       if (!blocked.left) {
         blocked.left = !this.expandTailX(-c);
       }
@@ -57,12 +60,11 @@ export default class Explosion extends Phaser.Sprite {
         blocked.down = !this.expandTailY(-c);
       }
     }
-
-
   }
 
   /**
-   *
+   * Destroy current explosion.
+   * @param {Boolean} destroyChildren
    */
   destroy(destroyChildren) {
     this.tail.map((part) => {
@@ -73,6 +75,11 @@ export default class Explosion extends Phaser.Sprite {
     super.destroy(destroyChildren);
   }
 
+  /**
+   * Expand explosion to x axis.
+   * @param {int} step
+   * @returns {boolean}
+   */
   expandTailX(step) {
     let tail;
     if (!this.isTileFree(this.marker.x + step, this.marker.y)) {
@@ -89,6 +96,11 @@ export default class Explosion extends Phaser.Sprite {
     return true;
   }
 
+  /**
+   * Expands explosion to y axis.
+   * @param {int} step
+   * @returns {boolean}
+   */
   expandTailY(step) {
     let tail;
     if (!this.isTileFree(this.marker.x, this.marker.y + step)) {
@@ -105,15 +117,23 @@ export default class Explosion extends Phaser.Sprite {
     return true;
   }
 
+  /**
+   * Put fire tile at position.
+   * @param {int} x
+   * @param {int} y
+   * @returns {Fire}
+   */
   addFire(x, y) {
-    return new Fire({game: this.game,
+    return new Fire({
+      game: this.game,
       x: (x + 0.5) * this.gridsize, // this.game.world.centerX,
       y: (y + 0.5) * this.gridsize, // this.game.world.centerY,
-      key: 'bomb.exploded'});
+      key: 'bomb.exploded'
+    });
   }
 
   /**
-   *
+   * Calculate px to grid.
    */
   calcGridPosition() {
     this.marker.x = this.game.math.snapToFloor(Math.floor(this.x), this.gridsize) / this.gridsize;
@@ -122,7 +142,7 @@ export default class Explosion extends Phaser.Sprite {
 
 
   /**
-   *
+   * Update loop.
    */
   update() {
     if (this.body) {
