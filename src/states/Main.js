@@ -59,6 +59,8 @@ export default class Main extends Phaser.State {
   }
 
   /**
+   * @param {integer} tileX X coordinate to check.
+   * @param {integer} tileY Y coordinate to check.
    * Resize the game to fit the window.
    */
   isTileFree(tileX, tileY) {
@@ -68,7 +70,9 @@ export default class Main extends Phaser.State {
     if (this.map.getTile(tileX, tileY, this.stonesLayer)) {
       return false;
     }
-    // TODO - check if a bomb is in tileX, tileY
+    if (this.bombs.some(bomb => bomb.marker.x === tileX && bomb.marker.Y === tileY)) {
+      return false;
+    }
     return true;
   }
 
