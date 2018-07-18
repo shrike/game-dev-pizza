@@ -11,6 +11,8 @@ export default class Main extends Phaser.State {
   constructor() {
     super();
     this.isTileFree = this.isTileFree.bind(this);
+    this.removeTile = this.removeTile.bind(this);
+    this.isTileRemovable = this.isTileRemovable.bind(this);
   }
 
   /**
@@ -84,6 +86,27 @@ export default class Main extends Phaser.State {
     }
     return true;
   }
+  /**
+   * Is tile removable from map
+   */
+  isTileRemovable(tileX, tileY) {
+    return !!this.map.getTile(tileX, tileY, this.bricksLayer);
+  }
+
+  /**
+   *
+   * @param {Integer} x
+   * @param {Integer} y
+   * @returns {boolean}
+   */
+  removeTile(x, y) {
+    if (this.isTileRemovable(x, y)) {
+      this.map.removeTile(x, y, this.bricksLayer)
+        .destroy();
+      return true;
+    }
+    return false;
+  }
 
   /**
    * Resize the game to fit the window.
@@ -129,8 +152,12 @@ export default class Main extends Phaser.State {
       y: bomb.y,
       key: 'bomb.exploded',
       isTileFree: this.isTileFree,
+      removeTile: this.removeTile,
+      isTileRemovable: this.isTileRemovable,
 
     });
+
+    this.game.time.events.add(Phaser.Timer.SECOND * 2, () => explosion.destroy(), this);
   }
 
   /**
