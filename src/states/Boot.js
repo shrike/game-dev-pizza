@@ -13,11 +13,11 @@ export default class Boot extends Phaser.State {
     this.load.crossOrigin = 'anonymous';
 
     this.load.tilemap('map', 'assets/tiles.json', null, Phaser.Tilemap.TILED_JSON);
-    this.load.image('tiles', 'assets/tiles.png');
+    this.load.image('tiles', 'assets/map-sprite.png');
     this.load.image('player', 'assets/creep_tri_c1.png');
     this.load.image('bomb', 'assets/bomb.png');
-    // TODO use map size instead of hardcoded 6
-    this.load.spritesheet('explosion', 'assets/explosion.png', 64, 64);
+    // TODO use map size instead of hardcoded 64
+    this.load.spritesheet('explosion', 'assets/explosion-sprite.png', 64, 64);
   }
 
   /**

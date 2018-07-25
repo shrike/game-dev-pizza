@@ -5,5 +5,5 @@ dist/
 package-lock.json
 resources/*.kra~
 # generated files
-src/assets/sprites/explosion.png
+src/assets/sprites/*-sprite.png
 src/spritesmith-generated/sprite.styl

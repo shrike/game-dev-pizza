@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const webpack = require('webpack');
 const HTMLPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
@@ -95,16 +96,20 @@ const config = {
     new HTMLPlugin({
       template: './src/index.template.html',
     }),
-    new SpritesmithPlugin({
-      src: {
-        cwd: path.resolve(__dirname, '../src/assets/sprites/explosion'),
-        glob: '*.png',
-      },
-      target: {
-        image: path.resolve(__dirname, '../src/assets/sprites/explosion.png'),
-        css: path.resolve(__dirname, '../src/spritesmith-generated/sprite.styl'),
-      },
-    }),
+    ...fs.readdirSync(path.resolve(__dirname, '../src/assets/sprites'))
+      .filter(filename => filename.endsWith('-sprite'))
+      .map(filename =>
+        new SpritesmithPlugin({
+          src: {
+            cwd: path.resolve(__dirname, '../src/assets/sprites/', filename ),
+            glob: '*.png',
+          },
+          target: {
+            image: path.resolve(__dirname, '../src/assets/sprites/', `${filename}.png`),
+            css: path.resolve(__dirname, '../src/spritesmith-generated/sprite.styl'),
+          },
+        })
+      ),
   ],
 };
 
