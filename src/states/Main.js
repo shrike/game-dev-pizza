@@ -98,10 +98,14 @@ export default class Main extends Phaser.State {
    * @param {Integer} y
    * @returns {boolean}
    */
-  removeTile(x, y) {
-    if (this.isTileRemovable(x, y)) {
-      this.map.removeTile(x, y, this.bricksLayer)
-        .destroy();
+  removeTile(tileX, tileY) {
+    const bomb = this.bombs.find(b => b.marker.x === tileX && b.marker.y === tileY);
+
+    if (bomb) {
+      bomb.explode();
+    }
+    if (this.isTileRemovable(tileX, tileY)) {
+      this.map.removeTile(tileX, tileY, this.bricksLayer).destroy();
       return true;
     }
     return false;

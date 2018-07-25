@@ -34,6 +34,7 @@ export default class Bomb extends Phaser.Sprite {
     this.onExplode = onExplode;
     this.isTileFree = isTileFree;
     this.removeTile = removeTile;
+    this.exploded = false;
   }
 
   /**
@@ -47,6 +48,10 @@ export default class Bomb extends Phaser.Sprite {
   }
 
   explode() {
+    if (this.exploded) {
+      return;
+    }
+    this.exploded = true;
     this.onExplode(this);
 
     const explosion = new Explosion({
