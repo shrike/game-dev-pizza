@@ -133,26 +133,6 @@ export default class Main extends Phaser.State {
       y,
       key: 'bomb',
       id,
-<<<<<<< Updated upstream
-=======
-    });
-    this.game.time.events.add(Phaser.Timer.SECOND * 4, () => this.explode(bomb), this);
-
-    return bomb;
-  }
-
-  explode(bomb) {
-    bomb.destroy();
-    this.bombs = this.bombs.filter((aBomb) => {
-      return aBomb.id !== bomb.id;
-    });
-
-    const explosion = new Explosion({
-      game: this.game,
-      x: bomb.x,
-      y: bomb.y,
-      key: 'bomb.exploded',
->>>>>>> Stashed changes
       isTileFree: this.isTileFree,
       removeTile: this.removeTile,
       onExplode: (exploded) => {
