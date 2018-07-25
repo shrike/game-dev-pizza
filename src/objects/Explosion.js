@@ -15,8 +15,8 @@ export default class Explosion extends Phaser.Sprite {
    * @param frame
    * @param cursors
    */
-  constructor({game, x, y, key, frame, isTileFree, removeTile, map}) {
-    super(game, x, y, key, frame);
+  constructor({game, x, y, key, isTileFree, removeTile, map}) {
+    super(game, x, y, key, 0);
 
     // Add the sprite to the game.
     this.game.add.existing(this);
@@ -123,7 +123,7 @@ export default class Explosion extends Phaser.Sprite {
     return new Fire({game: this.game,
       x: (x + 0.5) * this.gridsize, // this.game.world.centerX,
       y: (y + 0.5) * this.gridsize, // this.game.world.centerY,
-      key: 'bomb.exploded'});
+      key: 'explosion'});
   }
 
   /**

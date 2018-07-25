@@ -53,7 +53,7 @@ export default class Bomb extends Phaser.Sprite {
       game: this.game,
       x: this.x,
       y: this.y,
-      key: 'bomb.exploded',
+      key: 'explosion',
       isTileFree: this.isTileFree,
       removeTile: this.removeTile,
       map: this.map,

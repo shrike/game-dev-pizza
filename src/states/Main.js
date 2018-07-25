@@ -1,7 +1,6 @@
 // import throttle from 'lodash.throttle';
 import Player from '../objects/Player';
 import Bomb from '../objects/Bomb';
-import Explosion from '../objects/Explosion';
 
 /**
  * Setup and display the main game state.

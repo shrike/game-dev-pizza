@@ -16,8 +16,8 @@ export default class Boot extends Phaser.State {
     this.load.image('tiles', 'assets/tiles.png');
     this.load.image('player', 'assets/creep_tri_c1.png');
     this.load.image('bomb', 'assets/bomb.png');
-    this.load.image('bomb.exploded', 'assets/expl_test.png');
-    this.load.image('bomb.fire', 'assets/expl_test.png');
+    // TODO use map size instead of hardcoded 64
+    this.load.spritesheet('explosion', 'assets/explosion.png', 64, 64);
   }
 
   /**
