@@ -141,7 +141,6 @@ export default class Main extends Phaser.State {
         });
       }
     });
-    this.game.physics.arcade.enable(bomb);
 
     return bomb;
   }
