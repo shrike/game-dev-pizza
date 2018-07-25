@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const HTMLPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
+const SpritesmithPlugin = require('webpack-spritesmith');
 
 // Add support for Phaser webpack build.
 const phaserModule = path.join(__dirname, '../node_modules/phaser-ce/dist/');
@@ -93,6 +94,16 @@ const config = {
     // Generate output HTML.
     new HTMLPlugin({
       template: './src/index.template.html',
+    }),
+    new SpritesmithPlugin({
+      src: {
+        cwd: path.resolve(__dirname, '../src/assets/sprites/explosion'),
+        glob: '*.png',
+      },
+      target: {
+        image: path.resolve(__dirname, '../src/assets/sprites/explosion.png'),
+        css: path.resolve(__dirname, '../src/spritesmith-generated/sprite.styl'),
+      },
     }),
   ],
 };
