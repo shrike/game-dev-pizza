@@ -40,13 +40,13 @@
     "no-unneeded-ternary": ["warn", {"defaultAssignment": true}],
     "no-whitespace-before-property": "error",
     "object-curly-spacing": ["warn", "never"],
-    "require-jsdoc": ["error", {
-        "require": {
-            "FunctionDeclaration": true,
-            "MethodDefinition": true,
-            "ClassDeclaration": true
-        }
-    }],
+//    "require-jsdoc": ["error", {
+//        "require": {
+//            "FunctionDeclaration": true,
+//            "MethodDefinition": true,
+//            "ClassDeclaration": true
+//        }
+//    }],
     "spaced-comment": ["error", "always", {
         "line": {
             "markers": ["/"],
