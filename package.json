@@ -28,6 +28,7 @@
     "phaser-ce": "2.9.3",
     "phaser-webpack-loader": "1.0.2",
     "stats.js": "0.17.0",
+    "webpack-spritesmith": "^0.5.1",
     "winston": "2.4.0"
   },
   "devDependencies": {

@@ -159,10 +159,7 @@ export default class Player extends Phaser.Sprite {
    *
    */
   calcGridPosition() {
-    this.marker.x = this.game.math.snapToFloor(Math.floor(this.x), this.map.gridsize)
-      / this.map.gridsize;
-    this.marker.y = this.game.math.snapToFloor(Math.floor(this.y), this.map.gridsize)
-      / this.map.gridsize;
+    this.marker = this.map.pixelToGrid(this);
   }
 
   /**

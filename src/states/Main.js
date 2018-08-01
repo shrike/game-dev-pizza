@@ -1,7 +1,6 @@
 // import throttle from 'lodash.throttle';
 import Player from '../objects/Player';
 import Bomb from '../objects/Bomb';
-import Explosion from '../objects/Explosion';
 
 /**
  * Setup and display the main game state.
@@ -11,6 +10,8 @@ export default class Main extends Phaser.State {
   constructor() {
     super();
     this.isTileFree = this.isTileFree.bind(this);
+    this.removeTile = this.removeTile.bind(this);
+    this.isTileRemovable = this.isTileRemovable.bind(this);
   }
 
   /**
@@ -22,6 +23,15 @@ export default class Main extends Phaser.State {
     this.map.gridToPixelCoord = gridCoordinate => (gridCoordinate + 0.5) * 64;
     this.map.gridToPixelPoint =
         point => new Phaser.Point((point.x + 0.5) * 64, (point.y + 0.5) * 64);
+    this.map.pixelToGridCoord = function(val) {
+      return this.game.math.snapToFloor(Math.floor(val), this.gridsize) / this.gridsize;
+    };
+    this.map.pixelToGrid = function(point) {
+      return new Phaser.Point(
+        this.game.math.snapToFloor(Math.floor(point.x), this.gridsize) / this.gridsize,
+        this.game.math.snapToFloor(Math.floor(point.y), this.gridsize) / this.gridsize);
+    };
+
     this.map.addTilesetImage('tiles', 'tiles');
 
     this.group = this.game.add.group();
@@ -59,6 +69,8 @@ export default class Main extends Phaser.State {
   }
 
   /**
+   * @param {integer} tileX X coordinate to check.
+   * @param {integer} tileY Y coordinate to check.
    * Resize the game to fit the window.
    */
   isTileFree(tileX, tileY) {
@@ -68,8 +80,35 @@ export default class Main extends Phaser.State {
     if (this.map.getTile(tileX, tileY, this.stonesLayer)) {
       return false;
     }
-    // TODO - check if a bomb is in tileX, tileY
+    if (this.bombs.some(bomb => bomb.marker.x === tileX && bomb.marker.y === tileY)) {
+      return false;
+    }
     return true;
+  }
+  /**
+   * Is tile removable from map
+   */
+  isTileRemovable(tileX, tileY) {
+    return !!this.map.getTile(tileX, tileY, this.bricksLayer);
+  }
+
+  /**
+   *
+   * @param {Integer} x
+   * @param {Integer} y
+   * @returns {boolean}
+   */
+  removeTile(tileX, tileY) {
+    const bomb = this.bombs.find(b => b.marker.x === tileX && b.marker.y === tileY);
+
+    if (bomb) {
+      bomb.explode();
+    }
+    if (this.isTileRemovable(tileX, tileY)) {
+      this.map.removeTile(tileX, tileY, this.bricksLayer).destroy();
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -92,31 +131,21 @@ export default class Main extends Phaser.State {
   addBomb(x, y, id) {
     const bomb = new Bomb({
       game: this.game,
-      x, // this.game.world.centerX,
-      y, // this.game.world.centerY,
+      map: this.map,
+      x,
+      y,
       key: 'bomb',
       id,
+      isTileFree: this.isTileFree,
+      removeTile: this.removeTile,
+      onExplode: (exploded) => {
+        this.bombs = this.bombs.filter((aBomb) => {
+          return aBomb.id !== exploded.id;
+        });
+      }
     });
-    this.game.physics.arcade.enable(bomb);
-    this.game.time.events.add(Phaser.Timer.SECOND * 4, () => this.explode(bomb), this);
 
     return bomb;
-  }
-
-  explode(bomb) {
-    bomb.destroy();
-    this.bombs = this.bombs.filter((aBomb) => {
-      return aBomb.id !== bomb.id;
-    });
-
-    const explosion = new Explosion({
-      game: this.game,
-      x: bomb.x, // this.game.world.centerX,
-      y: bomb.y, // this.game.world.centerY,
-      key: 'bomb.exploded',
-      isTileFree: this.isTileFree,
-
-    });
   }
 
   /**

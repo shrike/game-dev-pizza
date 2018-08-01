@@ -1,8 +1,9 @@
 /* eslint object-curly-newline: ["error", "never"] */
 /* eslint-env es6 */
 import Fire from '../objects/Fire';
+
 /**
- * Setup and control base player.
+ * Setup and control bomb explosion.
  */
 export default class Explosion extends Phaser.Sprite {
   /**
@@ -14,85 +15,119 @@ export default class Explosion extends Phaser.Sprite {
    * @param frame
    * @param cursors
    */
-  constructor({game, x, y, key, frame, id, isTileFree}) {
-    super(game, x, y, key, frame);
+  constructor({game, x, y, key, isTileFree, removeTile, map}) {
+    super(game, x, y, key, 0);
 
     // Add the sprite to the game.
     this.game.add.existing(this);
     this.anchor.setTo(0.5);
     this.marker = new Phaser.Point();
-    this.marker.x = x;
-    this.marker.y = y;
-    this.id = id;
-    this.gridsize = 64;
+    this.marker.x = map.pixelToGridCoord(x);
+    this.marker.y = map.pixelToGridCoord(y);
+    this.gridsize = map.gridsize;
     this.isTileFree = isTileFree;
-    this.expand = this.expand.bind(this);
-    this.calcGridPosition();
+    this.removeTile = removeTile;
+    this.tail = [];
     this.expand();
   }
 
+  /**
+   * Expands the current explosion.
+   */
   expand() {
-    ['left', 'right', 'up', 'down'].map((position) => {
-      for (let c = 0; c <= 4; c++) {
-        let tail;
-
-        if(position === 'left' && this.isTileFree(this.marker.x - c, this.marker.y)) {
-          tail = new Fire({
-            game: this.game,
-            x: (this.marker.x - c + 0.5) * this.gridsize, // this.game.world.centerX,
-            y: (this.marker.y + 0.5) * this.gridsize, // this.game.world.centerY,
-            key: 'bomb.exploded',
-          });
-          continue;
-        } else if(position === 'right' && this.isTileFree(this.marker.x + c, this.marker.y)) {
-          console.log(this.marker.x, this.marker.y);
-          tail = new Fire({
-            game: this.game,
-            x: (this.marker.x + c + 0.5) * this.gridsize, // this.game.world.centerX,
-            y: (this.marker.y + 0.5) * this.gridsize, // this.game.world.centerY,
-            key: 'bomb.exploded',
-
-          });
-          continue;
-        } else if(position === 'up' && this.isTileFree(this.marker.x, this.marker.y - c)) {
-          tail = new Fire({
-            game: this.game,
-            x: (this.marker.x + 0.5) * this.gridsize, // this.game.world.centerX,
-            y: (this.marker.y - c + 0.5) * this.gridsize, // this.game.world.centerY,
-            key: 'bomb.exploded',
-
-          });
-          continue;
-        } else if(position === 'down' && this.isTileFree(this.marker.x, this.marker.y + c)) {
-          tail = new Fire({
-            game: this.game,
-            x: (this.marker.x + 0.5) * this.gridsize, // this.game.world.centerX,
-            y: (this.marker.y + c + 0.5) * this.gridsize, // this.game.world.centerY,
-            key: 'bomb.exploded',
-          });
-          continue;
-        }
-
-        break;
+    const blocked = {left: false,
+      right: false,
+      up: false,
+      down: false};
+    for (let c = 0; c <= 4; c += 1) {
+      if (!blocked.left) {
+        blocked.left = !this.expandTailX(-c);
       }
-      return 1;
+
+      if (!blocked.right) {
+        blocked.right = !this.expandTailX(c);
+      }
+
+      if (!blocked.up) {
+        blocked.up = !this.expandTailY(c);
+      }
+
+      if (!blocked.down) {
+        blocked.down = !this.expandTailY(-c);
+      }
+    }
+  }
+
+  /**
+   * Destroy current explosion.
+   * @param {Boolean} destroyChildren
+   */
+  destroy(destroyChildren) {
+    this.tail.map((part) => {
+      part.destroy(destroyChildren);
+      return true;
     });
 
-
+    super.destroy(destroyChildren);
   }
 
   /**
-   *
+   * Expand explosion to x axis.
+   * @param {int} step
+   * @returns {boolean}
    */
-  calcGridPosition() {
-    this.marker.x = this.game.math.snapToFloor(Math.floor(this.x), this.gridsize) / this.gridsize;
-    this.marker.y = this.game.math.snapToFloor(Math.floor(this.y), this.gridsize) / this.gridsize;
+  expandTailX(step) {
+    let tail;
+    if (!this.isTileFree(this.marker.x + step, this.marker.y)) {
+      if (this.removeTile(this.marker.x + step, this.marker.y)) {
+        tail = this.addFire(this.marker.x + step, this.marker.y);
+        this.tail.push(tail);
+      }
+      return false;
+    }
+
+    tail = this.addFire(this.marker.x + step, this.marker.y);
+    this.tail.push(tail);
+
+    return true;
   }
 
+  /**
+   * Expands explosion to y axis.
+   * @param {int} step
+   * @returns {boolean}
+   */
+  expandTailY(step) {
+    let tail;
+    if (!this.isTileFree(this.marker.x, this.marker.y + step)) {
+      if (this.removeTile(this.marker.x, this.marker.y + step)) {
+        tail = this.addFire(this.marker.x, this.marker.y + step);
+        this.tail.push(tail);
+      }
+      return false;
+    }
 
+    tail = this.addFire(this.marker.x, this.marker.y + step);
+    this.tail.push(tail);
+
+    return true;
+  }
 
   /**
-   *
+   * Put fire tile at position.
+   * @param {int} x
+   * @param {int} y
+   * @returns {Fire}
+   */
+  addFire(x, y) {
+    return new Fire({game: this.game,
+      x: (x + 0.5) * this.gridsize, // this.game.world.centerX,
+      y: (y + 0.5) * this.gridsize, // this.game.world.centerY,
+      key: 'explosion'});
+  }
+
+  /**
+   * Update loop.
    */
   update() {
     if (this.body) {

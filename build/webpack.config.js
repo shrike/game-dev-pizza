@@ -1,8 +1,10 @@
 const path = require('path');
+const fs = require('fs');
 const webpack = require('webpack');
 const HTMLPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
+const SpritesmithPlugin = require('webpack-spritesmith');
 
 // Add support for Phaser webpack build.
 const phaserModule = path.join(__dirname, '../node_modules/phaser-ce/dist/');
@@ -94,6 +96,20 @@ const config = {
     new HTMLPlugin({
       template: './src/index.template.html',
     }),
+    ...fs.readdirSync(path.resolve(__dirname, '../src/assets/sprites'))
+      .filter(filename => filename.endsWith('-sprite'))
+      .map(filename =>
+        new SpritesmithPlugin({
+          src: {
+            cwd: path.resolve(__dirname, '../src/assets/sprites/', filename ),
+            glob: '*.png',
+          },
+          target: {
+            image: path.resolve(__dirname, '../src/assets/sprites/', `${filename}.png`),
+            css: path.resolve(__dirname, '../src/spritesmith-generated/sprite.styl'),
+          },
+        })
+      ),
   ],
 };
 

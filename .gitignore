@@ -3,3 +3,7 @@ dist/
 .DS_Store
 .idea
 package-lock.json
+resources/*.kra~
+# generated files
+src/assets/sprites/*-sprite.png
+src/spritesmith-generated/sprite.styl
