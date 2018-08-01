@@ -38,7 +38,7 @@ export default class Player extends Phaser.Sprite {
     this.opposites = [Phaser.NONE, Phaser.RIGHT, Phaser.LEFT, Phaser.DOWN, Phaser.UP];
     this.pressedButtons = [false, false, false, false, false];
 
-    this.current = Phaser.RIGHT;
+    this.current = Phaser.DOWN;
   }
 
   /**
