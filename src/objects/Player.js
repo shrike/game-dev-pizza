@@ -36,8 +36,6 @@ export default class Player extends Phaser.Sprite {
     this.turning = false;
 
     this.opposites = [Phaser.NONE, Phaser.RIGHT, Phaser.LEFT, Phaser.DOWN, Phaser.UP];
-    this.directions = [Phaser.NONE, Phaser.ANGLE_LEFT, Phaser.ANGLE_RIGHT, Phaser.ANGLE_UP,
-      Phaser.ANGLE_DOWN];
     this.pressedButtons = [false, false, false, false, false];
 
     this.current = Phaser.RIGHT;
@@ -83,7 +81,7 @@ export default class Player extends Phaser.Sprite {
     this.turned = true;
     this.turning = false;
     this.current = direction;
-    this.angle = this.directions[direction];
+    this.frame = direction;
     return true;
   }
 
