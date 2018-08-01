@@ -24,7 +24,8 @@ export default class Explosion extends Phaser.Sprite {
       F1001: 4,
       F0110: 5,
       F0000: 6,
-      F0101: 7};
+      F0101: 7,
+      F1010: 8};
 
     const currentX = map.pixelToGridCoord(x);
     const currentY = map.pixelToGridCoord(y);
