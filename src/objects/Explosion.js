@@ -16,7 +16,29 @@ export default class Explosion extends Phaser.Sprite {
    * @param cursors
    */
   constructor({game, x, y, key, isTileFree, removeTile, map, onBurnTile}) {
-    super(game, x, y, key, 0);
+
+    const frames = {F1111: 0,
+      F0111: 1,
+      F0011: 2,
+      F1100: 3,
+      F1001: 4,
+      F0110: 5,
+      F0000: 6,
+      F0101: 7};
+
+    const currentX = map.pixelToGridCoord(x);
+    const currentY = map.pixelToGridCoord(y);
+
+
+    const bottom = isTileFree(currentX, currentY + 1) ? '1' : '0';
+    const right = isTileFree(currentX + 1, currentY) ? '1' : '0';
+    const top = isTileFree(currentX, currentY - 1) ? '1' : '0';
+    const left = isTileFree(currentX - 1, currentY) ? '1' : '0';
+
+    console.log(frames[`F${top}${right}${bottom}${left}`]);
+
+    super(game, x, y, key, frames[`F${top}${right}${bottom}${left}`]);
+
 
     // Add the sprite to the game.
     this.game.add.existing(this);
@@ -32,7 +54,6 @@ export default class Explosion extends Phaser.Sprite {
     this.onBurnTile = onBurnTile;
     this.expand();
   }
-
   /**
    * Expands the current explosion.
    */
