@@ -34,7 +34,7 @@ export default class Main extends Phaser.State {
 
     this.map.addTilesetImage('tiles', 'tiles');
 
-    this.explosions = this.game.add.group();
+    this.explosions = [];
 
     this.bombs = [];
     this.bombPlaced = false;
@@ -144,7 +144,8 @@ export default class Main extends Phaser.State {
         });
       },
       onBurnTile: (fire) => {
-        this.explosions.add(fire);
+        this.physics.arcade.enable(fire);
+        this.explosions.push(fire);
       }
     });
 
@@ -155,6 +156,7 @@ export default class Main extends Phaser.State {
    * Handle actions in the main game loop.
    */
   update() {
+    this.game.physics.arcade.overlap(this.player, this.explosions, () => this.gameOver());
     this.physics.arcade.collide(this.player, this.stonesLayer);
     this.physics.arcade.collide(this.player, this.bricksLayer);
     if (this.aKey.isDown && !this.bombPlaced) {
@@ -169,5 +171,9 @@ export default class Main extends Phaser.State {
 
       return bomb;
     });
+  }
+
+  gameOver() {
+    this.game.state.start('GameOver');
   }
 }
