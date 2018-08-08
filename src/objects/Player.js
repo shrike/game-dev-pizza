@@ -46,14 +46,19 @@ export default class Player extends Phaser.Sprite {
    * @param direction
    */
   canTurn(direction) {
+    const left = this.map.getTileWorldXY(this.left - 1, this.centerY);
+    const right = this.map.getTileWorldXY(this.right + 1, this.centerY);
+    const top = this.map.getTileWorldXY(this.centerX, this.top - 1);
+    const bottom = this.map.getTileWorldXY(this.centerX, this.bottom + 1);
+
     if (direction === Phaser.LEFT) {
-      return this.isTileFree(this.marker.x - 1, this.marker.y);
+      return this.isTileFree(left.x, left.y);
     } else if (direction === Phaser.RIGHT) {
-      return this.isTileFree(this.marker.x + 1, this.marker.y);
+      return this.isTileFree(right.x, right.y);
     } else if (direction === Phaser.UP) {
-      return this.isTileFree(this.marker.x, this.marker.y - 1);
+      return this.isTileFree(top.x, top.y);
     } else if (direction === Phaser.DOWN) {
-      return this.isTileFree(this.marker.x, this.marker.y + 1);
+      return this.isTileFree(bottom.x, bottom.y);
     }
 
     return false;
