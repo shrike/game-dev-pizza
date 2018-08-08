@@ -17,19 +17,27 @@ export default class Explosion extends Phaser.Sprite {
    */
   constructor({game, x, y, key, isTileFree, removeTile, map, onBurnTile}) {
 
-    const frames = {F1111: 0,
+    const frames = {
+      F1111: 0,
       F0111: 1,
-      F0011: 2,
-      F1100: 3,
-      F1001: 4,
-      F0110: 5,
-      F0000: 6,
-      F0101: 7,
-      F1010: 8};
+      F1011: 2,
+      F1101: 3,
+      F1110: 4,
+      F1100: 5,
+      F0110: 6,
+      F0011: 7,
+      F1001: 8,
+      F1010: 9,
+      F0101: 10,
+      F1000: 11,
+      F0100: 12,
+      F0010: 13,
+      F0001: 14,
+      F0000: 15,
+    };
 
     const currentX = map.pixelToGridCoord(x);
     const currentY = map.pixelToGridCoord(y);
-
 
     const bottom = isTileFree(currentX, currentY + 1) ? '1' : '0';
     const right = isTileFree(currentX + 1, currentY) ? '1' : '0';
@@ -40,6 +48,7 @@ export default class Explosion extends Phaser.Sprite {
 
     super(game, x, y, key, frames[`F${top}${right}${bottom}${left}`]);
 
+    this.frame = frames[`F${top}${right}${bottom}${left}`];
 
     // Add the sprite to the game.
     this.game.add.existing(this);
@@ -63,7 +72,7 @@ export default class Explosion extends Phaser.Sprite {
       right: false,
       up: false,
       down: false};
-    for (let c = 0; c <= 4; c += 1) {
+    for (let c = 1; c <= 4; c += 1) {
       if (!blocked.left) {
         blocked.left = !this.expandTailX(-c);
       }

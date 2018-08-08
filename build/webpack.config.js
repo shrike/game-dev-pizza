@@ -108,6 +108,10 @@ const config = {
             image: path.resolve(__dirname, '../src/assets/sprites/', `${filename}.png`),
             css: path.resolve(__dirname, '../src/spritesmith-generated/sprite.styl'),
           },
+          spritesmithOptions: {
+            algorithm: 'top-down',
+            algorithmOpts: {sort: false},
+          },
         })
       ),
   ],
