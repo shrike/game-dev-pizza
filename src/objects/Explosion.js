@@ -71,21 +71,22 @@ export default class Explosion extends Phaser.Sprite {
       right: false,
       up: false,
       down: false};
-    for (let c = 1; c <= 4; c += 1) {
+    const maxLen = 4;
+    for (let c = 1; c <= maxLen; c += 1) {
       if (!blocked.left) {
-        blocked.left = !this.expandTailX(-c);
+        blocked.left = !this.expandTailX(-c, c === maxLen);
       }
 
       if (!blocked.right) {
-        blocked.right = !this.expandTailX(c);
+        blocked.right = !this.expandTailX(c, c === maxLen);
       }
 
       if (!blocked.up) {
-        blocked.up = !this.expandTailY(c);
+        blocked.up = !this.expandTailY(c, c === maxLen);
       }
 
       if (!blocked.down) {
-        blocked.down = !this.expandTailY(-c);
+        blocked.down = !this.expandTailY(-c, c === maxLen);
       }
     }
   }
@@ -108,17 +109,25 @@ export default class Explosion extends Phaser.Sprite {
    * @param {int} step
    * @returns {boolean}
    */
-  expandTailX(step) {
+  expandTailX(step, last) {
+    let frame = 5;
+    if (step > 0) {
+      frame = 6;
+    }
+    if (last) {
+      frame -= 4;
+    }
+
     let tail;
     if (!this.isTileFree(this.marker.x + step, this.marker.y)) {
       if (this.removeTile(this.marker.x + step, this.marker.y)) {
-        tail = this.addFire(this.marker.x + step, this.marker.y);
+        tail = this.addFire(this.marker.x + step, this.marker.y, frame);
         this.tail.push(tail);
       }
       return false;
     }
 
-    tail = this.addFire(this.marker.x + step, this.marker.y);
+    tail = this.addFire(this.marker.x + step, this.marker.y, frame);
     this.tail.push(tail);
 
     return true;
@@ -129,17 +138,26 @@ export default class Explosion extends Phaser.Sprite {
    * @param {int} step
    * @returns {boolean}
    */
-  expandTailY(step) {
+  expandTailY(step, last) {
+    let frame = 7;
+    if (step > 0) {
+      frame = 4;
+    }
+
+    if (last) {
+      frame -= 4;
+    }
+
     let tail;
     if (!this.isTileFree(this.marker.x, this.marker.y + step)) {
       if (this.removeTile(this.marker.x, this.marker.y + step)) {
-        tail = this.addFire(this.marker.x, this.marker.y + step);
+        tail = this.addFire(this.marker.x, this.marker.y + step, frame);
         this.tail.push(tail);
       }
       return false;
     }
 
-    tail = this.addFire(this.marker.x, this.marker.y + step);
+    tail = this.addFire(this.marker.x, this.marker.y + step, frame);
     this.tail.push(tail);
 
     return true;
@@ -151,11 +169,12 @@ export default class Explosion extends Phaser.Sprite {
    * @param {int} y
    * @returns {Fire}
    */
-  addFire(x, y) {
+  addFire(x, y, frame) {
     const fire = new Fire({game: this.game,
       x: (x + 0.5) * this.gridsize, // this.game.world.centerX,
       y: (y + 0.5) * this.gridsize, // this.game.world.centerY,
-      key: 'explosion'});
+      key: 'expl-tail',
+      frame});
     this.onBurnTile(fire);
     return fire;
   }
