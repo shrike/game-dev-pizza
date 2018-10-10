@@ -39,12 +39,11 @@ export default class Explosion extends Phaser.Sprite {
     const currentX = map.pixelToGridCoord(x);
     const currentY = map.pixelToGridCoord(y);
 
+    // TODO: CHECK if the tile is destroyable! not if it is free...
     const bottom = isTileFree(currentX, currentY + 1) ? '1' : '0';
     const right = isTileFree(currentX + 1, currentY) ? '1' : '0';
     const top = isTileFree(currentX, currentY - 1) ? '1' : '0';
     const left = isTileFree(currentX - 1, currentY) ? '1' : '0';
-
-    console.log(frames[`F${top}${right}${bottom}${left}`]);
 
     super(game, x, y, key, frames[`F${top}${right}${bottom}${left}`]);
 
