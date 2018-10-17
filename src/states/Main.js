@@ -167,7 +167,7 @@ export default class Main extends Phaser.State {
       this.bombPlaced = false;
     }
     this.bombs.map((bomb) => {
-      this.physics.arcade.enable(bomb);
+   
       this.physics.arcade.collide(this.player, bomb);
 
       return bomb;

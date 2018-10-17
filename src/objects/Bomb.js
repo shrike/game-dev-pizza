@@ -45,6 +45,8 @@ export default class Bomb extends Phaser.Sprite {
     if (this.body) {
       this.body.immovable = true;
       this.body.allowGravity = false;
+      this.body.static = true;
+      this.body.enabled = true;
     }
   }
 
