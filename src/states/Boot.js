@@ -37,6 +37,9 @@ export default class Boot extends Phaser.State {
     // Disable right click.
     this.game.canvas.oncontextmenu = e => e.preventDefault();
 
+    // Enable running in the background
+    this.game.stage.disableVisibilityChange = true;
+
     // Move on to the preload state.
     this.game.state.start('Preload');
   }
