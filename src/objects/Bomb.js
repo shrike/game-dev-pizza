@@ -16,7 +16,7 @@ export default class Bomb extends Phaser.Sprite {
    * @param frame
    * @param cursors
    */
-  constructor({game, map, x, y, key, frame, id, onExplode, isTileFree, removeTile, onBurnTile}) {
+  constructor({game, map, x, y, key, frame, id, onExplode, checkTile, removeTile, onBurnTile}) {
     super(
       game,
       game.math.snapToFloor(x, map.gridsize) + (map.gridsize / 2),
@@ -32,7 +32,7 @@ export default class Bomb extends Phaser.Sprite {
     this.id = id;
     this.game.time.events.add(Phaser.Timer.SECOND * 4, this.explode, this);
     this.onExplode = onExplode;
-    this.isTileFree = isTileFree;
+    this.checkTile = checkTile;
     this.removeTile = removeTile;
     this.exploded = false;
     this.onBurnTile = onBurnTile;
@@ -62,7 +62,7 @@ export default class Bomb extends Phaser.Sprite {
       x: this.x,
       y: this.y,
       key: 'explosion',
-      isTileFree: this.isTileFree,
+      checkTile: this.checkTile,
       removeTile: this.removeTile,
       map: this.map,
       onBurnTile: this.onBurnTile,

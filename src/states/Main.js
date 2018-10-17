@@ -10,6 +10,7 @@ export default class Main extends Phaser.State {
   constructor() {
     super();
     this.isTileFree = this.isTileFree.bind(this);
+    this.checkTile = this.checkTile.bind(this);
     this.removeTile = this.removeTile.bind(this);
     this.isTileRemovable = this.isTileRemovable.bind(this);
   }
@@ -71,7 +72,7 @@ export default class Main extends Phaser.State {
   /**
    * @param {integer} tileX X coordinate to check.
    * @param {integer} tileY Y coordinate to check.
-   * Resize the game to fit the window.
+   * @returns true if the tile with the given coordinates is free (no bomb, no bricks)
    */
   isTileFree(tileX, tileY) {
     if (this.map.getTile(tileX, tileY, this.bricksLayer)) {
@@ -84,6 +85,24 @@ export default class Main extends Phaser.State {
       return false;
     }
     return true;
+  }
+
+  /**
+   * @param {integer} tileX X coordinate to check.
+   * @param {integer} tileY Y coordinate to check.
+   * @returns
+   *  0 if the tile with the given coordinates is free (no bomb, no bricks)
+   *  1 if the tile contains a destructible (bricks)
+   *  2 if the tile contains wall
+   */
+  checkTile(tileX, tileY) {
+    if (this.isTileFree(tileX, tileY)) {
+      return 0;
+    }
+    if (this.isTileRemovable(tileX, tileY)) {
+      return 1;
+    }
+    return 2;
   }
   /**
    * Is tile removable from map
@@ -136,7 +155,7 @@ export default class Main extends Phaser.State {
       y,
       key: 'bomb',
       id,
-      isTileFree: this.isTileFree,
+      checkTile: this.checkTile,
       removeTile: this.removeTile,
       onExplode: (exploded) => {
         this.bombs = this.bombs.filter((aBomb) => {

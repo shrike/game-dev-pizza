@@ -15,7 +15,7 @@ export default class Explosion extends Phaser.Sprite {
    * @param frame
    * @param cursors
    */
-  constructor({game, x, y, key, isTileFree, removeTile, map, onBurnTile}) {
+  constructor({game, x, y, key, checkTile, removeTile, map, onBurnTile}) {
 
     const frames = {
       F1111: 0,
@@ -40,10 +40,10 @@ export default class Explosion extends Phaser.Sprite {
     const currentY = map.pixelToGridCoord(y);
 
     // TODO: CHECK if the tile is destroyable! not if it is free...
-    const bottom = isTileFree(currentX, currentY + 1) ? '1' : '0';
-    const right = isTileFree(currentX + 1, currentY) ? '1' : '0';
-    const top = isTileFree(currentX, currentY - 1) ? '1' : '0';
-    const left = isTileFree(currentX - 1, currentY) ? '1' : '0';
+    const bottom = checkTile(currentX, currentY + 1) !== 2 ? '1' : '0';
+    const right = checkTile(currentX + 1, currentY) !== 2 ? '1' : '0';
+    const top = checkTile(currentX, currentY - 1) !== 2 ? '1' : '0';
+    const left = checkTile(currentX - 1, currentY) !== 2 ? '1' : '0';
 
     super(game, x, y, key, frames[`F${top}${right}${bottom}${left}`]);
 
@@ -56,7 +56,7 @@ export default class Explosion extends Phaser.Sprite {
     this.marker.x = map.pixelToGridCoord(x);
     this.marker.y = map.pixelToGridCoord(y);
     this.gridsize = map.gridsize;
-    this.isTileFree = isTileFree;
+    this.checkTile = checkTile;
     this.removeTile = removeTile;
     this.tail = [];
     onBurnTile(this);
@@ -118,19 +118,7 @@ export default class Explosion extends Phaser.Sprite {
       frame -= 4;
     }
 
-    let tail;
-    if (!this.isTileFree(this.marker.x + step, this.marker.y)) {
-      if (this.removeTile(this.marker.x + step, this.marker.y)) {
-        tail = this.addFire(this.marker.x + step, this.marker.y, frame);
-        this.tail.push(tail);
-      }
-      return false;
-    }
-
-    tail = this.addFire(this.marker.x + step, this.marker.y, frame);
-    this.tail.push(tail);
-
-    return true;
+    return this.addFire(this.marker.x + step, this.marker.y, frame);
   }
 
   /**
@@ -148,35 +136,35 @@ export default class Explosion extends Phaser.Sprite {
       frame -= 4;
     }
 
-    let tail;
-    if (!this.isTileFree(this.marker.x, this.marker.y + step)) {
-      if (this.removeTile(this.marker.x, this.marker.y + step)) {
-        tail = this.addFire(this.marker.x, this.marker.y + step, frame);
-        this.tail.push(tail);
-      }
-      return false;
-    }
-
-    tail = this.addFire(this.marker.x, this.marker.y + step, frame);
-    this.tail.push(tail);
-
-    return true;
+    return this.addFire(this.marker.x, this.marker.y + step, frame);
   }
 
   /**
    * Put fire tile at position.
    * @param {int} x
    * @param {int} y
-   * @returns {Fire}
+   * @param frame
+   * @returns {boolean}
    */
   addFire(x, y, frame) {
+    const tileType = this.checkTile(x, y);
+    if (tileType === 2) {
+      return false;
+    }
+
     const fire = new Fire({game: this.game,
       x: (x + 0.5) * this.gridsize, // this.game.world.centerX,
       y: (y + 0.5) * this.gridsize, // this.game.world.centerY,
       key: 'expl-tail',
       frame});
+    this.tail.push(fire);
     this.onBurnTile(fire);
-    return fire;
+
+    if (tileType === 1) {
+      this.removeTile(x, y);
+    }
+
+    return tileType === 0;
   }
 
   /**
