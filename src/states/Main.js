@@ -92,14 +92,19 @@ export default class Main extends Phaser.State {
    * @param {integer} tileY Y coordinate to check.
    * @returns
    *  0 if the tile with the given coordinates is free (no bomb, no bricks)
-   *  1 if the tile contains a destructible (bricks)
+   *  1 if the tile contains a destructible (bricks, bomb)
    *  2 if the tile contains wall
    */
   checkTile(tileX, tileY) {
     if (this.isTileFree(tileX, tileY)) {
       return 0;
     }
+    // Check if bricks
     if (this.isTileRemovable(tileX, tileY)) {
+      return 1;
+    }
+    // Check if bomb
+    if (this.bombs.find(b => b.marker.x === tileX && b.marker.y === tileY)) {
       return 1;
     }
     return 2;
@@ -186,7 +191,7 @@ export default class Main extends Phaser.State {
       this.bombPlaced = false;
     }
     this.bombs.map((bomb) => {
-   
+
       this.physics.arcade.collide(this.player, bomb);
 
       return bomb;
