@@ -1,5 +1,7 @@
 // import Player from '../objects/Player';
 
+import Client from '../client/Client';
+
 /**
  * Setup the pre-game boot sequence.
  */
@@ -8,6 +10,7 @@ export default class Boot extends Phaser.State {
    * Preload any assets needed for the preload state.
    */
   preload() {
+    Client.sendTest();
     // this.load.baseURL = 'http://files.phaser.io.s3.amazonaws.com/codingtips/issue005/';
     this.load.baseURL = '';
     this.load.crossOrigin = 'anonymous';
