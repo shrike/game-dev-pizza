@@ -1,11 +1,16 @@
 import io from 'socket.io-client';
 
 const Client = {};
-Client.socket = io.connect('ws://127.0.0.1:8081');
+Client.socket = io.connect('ws://127.0.0.1:7788');
 
 Client.sendTest = function() {
   console.log('test sent');
   Client.socket.emit('test');
+};
+
+Client.sendButtons = function(buttons) {
+
+  Client.socket.emit('buttons', buttons);
 };
 
 Client.askNewPlayer = function() {

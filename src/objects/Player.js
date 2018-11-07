@@ -1,6 +1,6 @@
 /* eslint object-curly-newline: ["error", "never"] */
 /* eslint-env es6 */
-
+import Client from '../client/Client';
 /**
  * Setup and control base player.
  */
@@ -37,8 +37,12 @@ export default class Player extends Phaser.Sprite {
 
     this.opposites = [Phaser.NONE, Phaser.RIGHT, Phaser.LEFT, Phaser.DOWN, Phaser.UP];
     this.pressedButtons = [false, false, false, false, false];
-
+    this.buttonsQueue = [];
     this.current = Phaser.DOWN;
+    Client.socket.on("buttons", (buttons) => {
+      this.buttonsQueue.push(buttons);
+    });
+
   }
 
   /**
@@ -94,17 +98,22 @@ export default class Player extends Phaser.Sprite {
    *
    */
   move() {
+
+    const event = this.buttonsQueue.shift();
+
+    if (!event) return;
+    
     // if button pressed in new direction - check if we can turn
-    if (this.cursors.left.isDown && this.current !== Phaser.LEFT && !this.turned &&
+    if (event[Phaser.LEFT] && this.current !== Phaser.LEFT && !this.turned &&
       this.turn(Phaser.LEFT)) {
       ;
-    } else if (this.cursors.right.isDown && this.current !== Phaser.RIGHT && !this.turned &&
+    } else if (event[Phaser.RIGHT] && this.current !== Phaser.RIGHT && !this.turned &&
       this.turn(Phaser.RIGHT)) {
       ;
-    } else if (this.cursors.up.isDown && this.current !== Phaser.UP && !this.turned &&
+    } else if (event[Phaser.UP] && this.current !== Phaser.UP && !this.turned &&
       this.turn(Phaser.UP)) {
       ;
-    } else if (this.cursors.down.isDown && this.current !== Phaser.DOWN && !this.turned &&
+    } else if (event[Phaser.DOWN] && this.current !== Phaser.DOWN && !this.turned &&
       this.turn(Phaser.DOWN)) {
       ;
     } else if (!this.pressedButtons[this.current]) {
@@ -179,6 +188,7 @@ export default class Player extends Phaser.Sprite {
     this.pressedButtons[Phaser.RIGHT] = this.cursors.right.isDown;
     this.pressedButtons[Phaser.UP] = this.cursors.up.isDown;
     this.pressedButtons[Phaser.DOWN] = this.cursors.down.isDown;
+
   }
 
   /**
@@ -187,6 +197,7 @@ export default class Player extends Phaser.Sprite {
   update() {
     this.checkButtons();
     this.calcGridPosition();
+    Client.sendButtons(this.pressedButtons);
     this.move();
   }
 }

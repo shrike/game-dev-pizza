@@ -61,10 +61,15 @@ io.on('connection', (socket) => {
     });
   });
 
+  socket.on('buttons', (buttons) => {
+    io.emit('buttons', buttons);
+  });
+
   socket.on('test', () => {
     log.warn('test received');
   });
 });
+
 
 // Log that the game server has started.
 log.info(`Game server started at ${host} [${env}].`);
