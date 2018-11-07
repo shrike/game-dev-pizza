@@ -39,11 +39,19 @@
  "renderorder":"right-down",
  "tiledversion":"1.1.6",
  "tileheight":64,
- "tilesets":[
-        {
-         "firstgid":1,
-         "source":"..\/..\/..\/resources\/tiles_blue-theme.tsx"
-        }],
+ "tilesets":[{
+        "columns":2,
+        "firstgid":1,
+        "image":"tiles_blue-theme.png",
+        "imageheight":128,
+        "imagewidth":128,
+        "margin":0,
+        "name":"tiles",
+        "spacing":0,
+        "tilecount":4,
+        "tileheight":64,
+        "tilewidth":64
+       }],
  "tilewidth":64,
  "type":"map",
  "version":1,

@@ -44,8 +44,8 @@ export default class Main extends Phaser.State {
     this.stonesLayer = this.map.createLayer('stones');
     this.bricksLayer = this.map.createLayer('bricks');
 
-    this.map.setCollision(4, true, this.stonesLayer);
-    this.map.setCollision(3, true, this.bricksLayer);
+    this.map.setCollision([2, 3, 4], true, this.stonesLayer);
+    this.map.setCollision([2, 3, 4], true, this.bricksLayer);
 
     // // Enable arcade physics.
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
