@@ -1,6 +1,7 @@
 // import throttle from 'lodash.throttle';
 import Player from '../objects/Player';
 import Bomb from '../objects/Bomb';
+import Client from '../client/Client';
 
 /**
  * Setup and display the main game state.
@@ -13,7 +14,11 @@ export default class Main extends Phaser.State {
     this.checkTile = this.checkTile.bind(this);
     this.removeTile = this.removeTile.bind(this);
     this.isTileRemovable = this.isTileRemovable.bind(this);
-  }
+    this.initCurrentPlayer = this.initCurrentPlayer.bind(this);
+    this.initAllPlayers = this.initAllPlayers.bind(this);
+    this.addPlayer = this.addPlayer.bind(this);
+    this.players = [];
+   }
 
   /**
    * Setup all objects, etc needed for the main game state.
@@ -36,7 +41,6 @@ export default class Main extends Phaser.State {
     this.map.addTilesetImage('tiles', 'tiles');
 
     this.explosions = [];
-
     this.bombs = [];
     this.bombPlaced = false;
 
@@ -46,11 +50,64 @@ export default class Main extends Phaser.State {
 
     this.map.setCollision(4, true, this.stonesLayer);
     this.map.setCollision(3, true, this.bricksLayer);
+    this.aKey = null;
 
     // // Enable arcade physics.
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    // // Add a player to the game.
+
+    Client.socket.on("myPlayer", this.initCurrentPlayer);
+
+    Client.socket.on("allplayers", this.initAllPlayers);
+
+    Client.socket.on("newplayer", this.addPlayer);
+
+
+    Client.askNewPlayer();
+
+    // Setup listener for window resize.
+    // window.addEventListener('resize', throttle(this.resize.bind(this), 50), false);
+  }
+
+  initAllPlayers(players) {
+      players.map((player) => {
+      const newPlayer = new Player({
+        game: this.game,
+        key: 'player',
+        map: this.map,
+        isTileFree: this.isTileFree,
+        x:  96,
+        y:  96,
+        cursors: null,
+        id: player.id,
+      });
+
+      this.physics.arcade.enable(newPlayer);
+
+      this.players[player.id] = newPlayer;
+    });
+  }
+
+  addPlayer(player) {
+
+    const newPlayer = new Player({
+      game: this.game,
+      key: 'player',
+      map: this.map,
+      isTileFree: this.isTileFree,
+      x: 96, // this.game.world.centerX,
+      y: 96, // this.game.world.centerY,
+      cursors: null,
+      id: player.id,
+    });
+
+    this.physics.arcade.enable(newPlayer);
+
+    this.players[player.id] = newPlayer;
+  }
+
+  initCurrentPlayer(player) {
+
     this.player = new Player({
       game: this.game,
       key: 'player',
@@ -59,14 +116,15 @@ export default class Main extends Phaser.State {
       x: 96, // this.game.world.centerX,
       y: 96, // this.game.world.centerY,
       cursors: this.input.keyboard.createCursorKeys(),
+      id: player.id,
     });
 
     this.physics.arcade.enable(this.player);
 
+    this.players[player.id] = this.player;
+
     this.aKey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
 
-    // Setup listener for window resize.
-    // window.addEventListener('resize', throttle(this.resize.bind(this), 50), false);
   }
 
   /**
@@ -182,12 +240,13 @@ export default class Main extends Phaser.State {
   update() {
     this.game.physics.arcade.overlap(this.player, this.explosions, () => this.gameOver());
     this.physics.arcade.collide(this.player, this.stonesLayer);
+    this.physics.arcade.collide(this.player, this.players);
     this.physics.arcade.collide(this.player, this.bricksLayer);
-    if (this.aKey.isDown && !this.bombPlaced) {
+    if (this.aKey && this.aKey.isDown && !this.bombPlaced) {
       this.bombs.push(this.addBomb(this.player.x, this.player.y, this.bombs.length));
       this.bombPlaced = true;
     }
-    if (this.aKey.isUp) {
+    if (this.aKey && this.aKey.isUp) {
       this.bombPlaced = false;
     }
     this.bombs.map((bomb) => {

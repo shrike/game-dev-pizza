@@ -16,12 +16,12 @@ export default class Player extends Phaser.Sprite {
    * @param frame
    * @param cursors
    */
-  constructor({game, map, isTileFree, x, y, key, frame, cursors}) {
+  constructor({game, map, isTileFree, x, y, key, frame, cursors, id}) {
     super(game, x, y, key, frame);
 
     this.map = map;
     this.isTileFree = isTileFree;
-
+    this.id = id;
     // Add the sprite to the game.
     this.game.add.existing(this);
     this.anchor.setTo(0.5);
@@ -40,7 +40,10 @@ export default class Player extends Phaser.Sprite {
     this.buttonsQueue = [];
     this.current = Phaser.DOWN;
     Client.socket.on("buttons", (buttons) => {
-      this.buttonsQueue.push(buttons);
+      console.log(buttons);
+      if (id === buttons.playerId) {
+        this.buttonsQueue.push(buttons.buttons);
+      };
     });
 
   }
@@ -102,7 +105,7 @@ export default class Player extends Phaser.Sprite {
     const event = this.buttonsQueue.shift();
 
     if (!event) return;
-    
+
     // if button pressed in new direction - check if we can turn
     if (event[Phaser.LEFT] && this.current !== Phaser.LEFT && !this.turned &&
       this.turn(Phaser.LEFT)) {
@@ -116,11 +119,13 @@ export default class Player extends Phaser.Sprite {
     } else if (event[Phaser.DOWN] && this.current !== Phaser.DOWN && !this.turned &&
       this.turn(Phaser.DOWN)) {
       ;
-    } else if (!this.pressedButtons[this.current]) {
+    } else if (!event[this.current]) {
       // else if button is pressed in current direction - continue, else stop
       this.stop();
       return;
     }
+
+    this.turned = false;
 
     if (this.current === Phaser.LEFT) {
       this.body.velocity.x = -this.speed;
@@ -195,9 +200,14 @@ export default class Player extends Phaser.Sprite {
    *
    */
   update() {
-    this.checkButtons();
+    if (this.cursors) {
+      this.checkButtons();
+    }
     this.calcGridPosition();
-    Client.sendButtons(this.pressedButtons);
+    if (this.cursors && (this.cursors.left.isDown || this.cursors.right.isDown || this.cursors.up.isDown || this.cursors.down.isDown)) {
+      Client.sendButtons({playerId: this.id, buttons: this.pressedButtons});
+    }
+
     this.move();
   }
 }
