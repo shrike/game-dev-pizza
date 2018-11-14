@@ -1,0 +1,14 @@
+{
+  "maps": [
+    {
+      "name": "blue theme",
+      "map": "assets/tiles_l3_alt.json",
+      "tiles": "assets/tiles_blue-theme.png"
+    },
+    {
+      "name": "default",
+      "map": "assets/tiles.json",
+      "tiles": "assets/map-sprite.png"
+    }
+  ]
+}

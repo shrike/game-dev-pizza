@@ -19,21 +19,22 @@ export default class Main extends Phaser.State {
    * Setup all objects, etc needed for the main game state.
    */
   create() {
-    this.map = this.add.tilemap('map');
+    this.map = this.add.tilemap(this.game.mapName);
+    this.map.addTilesetImage('tiles', this.game.mapName);
+
     this.map.gridsize = 64;
     this.map.gridToPixelCoord = gridCoordinate => (gridCoordinate + 0.5) * 64;
     this.map.gridToPixelPoint =
         point => new Phaser.Point((point.x + 0.5) * 64, (point.y + 0.5) * 64);
-    this.map.pixelToGridCoord = function(val) {
+    this.map.pixelToGridCoord = (val) => {
       return this.game.math.snapToFloor(Math.floor(val), this.gridsize) / this.gridsize;
     };
-    this.map.pixelToGrid = function(point) {
+    this.map.pixelToGrid = (point) => {
       return new Phaser.Point(
         this.game.math.snapToFloor(Math.floor(point.x), this.gridsize) / this.gridsize,
         this.game.math.snapToFloor(Math.floor(point.y), this.gridsize) / this.gridsize);
     };
 
-    this.map.addTilesetImage('tiles', 'tiles');
 
     this.explosions = [];
 

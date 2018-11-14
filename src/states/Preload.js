@@ -24,11 +24,17 @@ export default class Preload extends Phaser.State {
     this.game.physics.arcade.TILE_BIAS = 0;
     this.game.physics.arcade.OVERLAP_BIAS = 0;
 
+    const maps = this.game.cache.getJSON('maps');
+    maps.maps.forEach((map) => {
+      this.load.tilemap(map.name, map.map, null, Phaser.Tilemap.TILED_JSON);
+      this.load.image(map.name, map.tiles);
+    });
+
     // Begin loading all of the assets.
     this.game.plugins.add(WebpackLoader, AssetManifest, postfix)
       .load()
       .then(() => {
-        this.game.state.start('Main');
+        this.game.state.start('MainMenu');
       });
   }
 
