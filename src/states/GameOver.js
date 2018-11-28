@@ -7,14 +7,15 @@ export default class GameOver extends Phaser.State {
     const gameOverText = 'GAME OVER\nPress any key to restart';
     const textStyle = {font: '50px Arial', fill: '#F2F2F2', align: 'center'};
 
-    this.stateText = this.game.add.text(this.game.world.centerX, this.game.world.centerY, gameOverText, textStyle);
+    this.stateText = this.game.add.text(
+      this.game.world.centerX, this.game.world.centerY, gameOverText, textStyle);
 
     // Position text at the center
     this.stateText.anchor.setTo(0.5);
 
-    this.game.input.keyboard.onDownCallback = function() {
+    this.game.input.keyboard.onDownCallback = () => {
       this.game.input.keyboard.onDownCallback = null;
-      this.game.state.start('Main');
+      this.game.state.start('MainMenu');
     };
   }
 
