@@ -26,10 +26,10 @@ export default class Main extends Phaser.State {
     this.map.gridToPixelCoord = gridCoordinate => (gridCoordinate + 0.5) * 64;
     this.map.gridToPixelPoint =
         point => new Phaser.Point((point.x + 0.5) * 64, (point.y + 0.5) * 64);
-    this.map.pixelToGridCoord = (val) => {
+    this.map.pixelToGridCoord = function (val) {
       return this.game.math.snapToFloor(Math.floor(val), this.gridsize) / this.gridsize;
     };
-    this.map.pixelToGrid = (point) => {
+    this.map.pixelToGrid = function (point) {
       return new Phaser.Point(
         this.game.math.snapToFloor(Math.floor(point.x), this.gridsize) / this.gridsize,
         this.game.math.snapToFloor(Math.floor(point.y), this.gridsize) / this.gridsize);
