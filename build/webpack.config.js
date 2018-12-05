@@ -5,6 +5,7 @@ const HTMLPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 const SpritesmithPlugin = require('webpack-spritesmith');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 // Add support for Phaser webpack build.
 const phaserModule = path.join(__dirname, '../node_modules/phaser-ce/dist/');
@@ -49,6 +50,7 @@ const config = {
     net: 'empty',
     tls: 'empty',
   },
+
   module: {
     rules: [
       {
@@ -74,12 +76,18 @@ const config = {
       {
         test: /\.css$/,
         use: ExtractTextPlugin.extract({
-          use: 'css-loader!postcss-loader',
+          use: 'css-loader',
         }),
       },
     ],
   },
   plugins: [
+    new CopyWebpackPlugin([
+      {
+        from: "./src/assets/fonts",
+        to: "fonts"
+      }
+    ]),
     // Use hoisting.
     new webpack.optimize.ModuleConcatenationPlugin(),
     // Pass environment variables to bundle.
