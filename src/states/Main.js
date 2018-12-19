@@ -243,7 +243,7 @@ export default class Main extends Phaser.State {
   update() {
     this.game.physics.arcade.overlap(this.player, this.explosions, () => this.gameOver());
     this.physics.arcade.collide(this.player, this.stonesLayer);
-    this.physics.arcade.collide(this.player, this.players);
+    //this.physics.arcade.collide(this.player, this.players);
     this.physics.arcade.collide(this.player, this.bricksLayer);
     if (this.aKey && this.aKey.isDown && !this.bombPlaced) {
       this.bombs.push(this.addBomb(this.player.x, this.player.y, this.bombs.length));
