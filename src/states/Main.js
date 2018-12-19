@@ -80,6 +80,7 @@ export default class Main extends Phaser.State {
         y:  96,
         cursors: null,
         id: player.id,
+        isPlayerLocal: false,
       });
 
       this.physics.arcade.enable(newPlayer);
@@ -99,6 +100,7 @@ export default class Main extends Phaser.State {
       y: 96, // this.game.world.centerY,
       cursors: null,
       id: player.id,
+      isPlayerLocal: false,
     });
 
     this.physics.arcade.enable(newPlayer);
@@ -117,6 +119,7 @@ export default class Main extends Phaser.State {
       y: 96, // this.game.world.centerY,
       cursors: this.input.keyboard.createCursorKeys(),
       id: player.id,
+      isPlayerLocal: true,
     });
 
     this.physics.arcade.enable(this.player);

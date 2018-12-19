@@ -16,12 +16,14 @@ export default class Player extends Phaser.Sprite {
    * @param frame
    * @param cursors
    */
-  constructor({game, map, isTileFree, x, y, key, frame, cursors, id}) {
+  constructor({game, map, isTileFree, x, y, key, frame, cursors, id, isPlayerLocal}) {
     super(game, x, y, key, frame);
 
     this.map = map;
     this.isTileFree = isTileFree;
     this.id = id;
+    this.isPlayerLocal = isPlayerLocal
+
     // Add the sprite to the game.
     this.game.add.existing(this);
     this.anchor.setTo(0.5);
@@ -39,6 +41,7 @@ export default class Player extends Phaser.Sprite {
     this.pressedButtons = [false, false, false, false, false];
     this.buttonsQueue = [];
     this.current = Phaser.DOWN;
+
     Client.socket.on("buttons", (buttons) => {
       console.log(buttons);
       if (id === buttons.playerId) {
@@ -193,16 +196,17 @@ export default class Player extends Phaser.Sprite {
     this.pressedButtons[Phaser.RIGHT] = this.cursors.right.isDown;
     this.pressedButtons[Phaser.UP] = this.cursors.up.isDown;
     this.pressedButtons[Phaser.DOWN] = this.cursors.down.isDown;
-
   }
 
   /**
    *
    */
   update() {
-    if (this.cursors) {
+    // Only the local player can be controlled via the keyboard
+    if (this.isPlayerLocal) {
       this.checkButtons();
     }
+
     this.calcGridPosition();
     if (this.cursors && (this.cursors.left.isDown || this.cursors.right.isDown || this.cursors.up.isDown || this.cursors.down.isDown)) {
       Client.sendButtons({playerId: this.id, buttons: this.pressedButtons});
