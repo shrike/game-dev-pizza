@@ -43,7 +43,6 @@ export default class Player extends Phaser.Sprite {
     this.current = Phaser.DOWN;
 
     Client.socket.on("buttons", (buttons) => {
-      console.log(buttons);
       if (id === buttons.playerId) {
         this.buttonsQueue.push(buttons.buttons);
       };
@@ -107,7 +106,10 @@ export default class Player extends Phaser.Sprite {
 
     const event = this.buttonsQueue.shift();
 
-    if (!event) return;
+    if (!event) {
+      this.stop();
+      return;
+    }
 
     // if button pressed in new direction - check if we can turn
     if (event[Phaser.LEFT] && this.current !== Phaser.LEFT && !this.turned &&
