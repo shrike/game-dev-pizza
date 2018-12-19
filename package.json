@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "core-js": "2.5.3",
+    "express": "^4.16.4",
     "g": "^2.0.1",
     "grunt": "^1.0.3",
     "howler": "2.0.7",
