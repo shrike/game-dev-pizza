@@ -241,10 +241,20 @@ export default class Main extends Phaser.State {
    * Handle actions in the main game loop.
    */
   update() {
-    this.game.physics.arcade.overlap(this.player, this.explosions, () => this.gameOver());
-    this.physics.arcade.collide(this.player, this.stonesLayer);
-    //this.physics.arcade.collide(this.player, this.players);
-    this.physics.arcade.collide(this.player, this.bricksLayer);
+
+    Object.keys(this.players).forEach((k) => {
+      this.game.physics.arcade.overlap(this.players[k], this.explosions, () => {
+        if (this.players[k] === this.player) {
+          this.gameOver();
+        } else {
+          // TODO: remove that dude.
+        }
+      });
+      this.physics.arcade.collide(this.players[k], this.stonesLayer);
+      this.physics.arcade.collide(this.players[k], this.bricksLayer);
+      this.physics.arcade.collide(this.players[k], this.bombs);
+    });
+
     if (this.aKey && this.aKey.isDown && !this.bombPlaced) {
       this.bombs.push(this.addBomb(this.player.x, this.player.y, this.bombs.length));
       this.bombPlaced = true;
@@ -252,12 +262,6 @@ export default class Main extends Phaser.State {
     if (this.aKey && this.aKey.isUp) {
       this.bombPlaced = false;
     }
-    this.bombs.map((bomb) => {
-
-      this.physics.arcade.collide(this.player, bomb);
-
-      return bomb;
-    });
   }
 
   gameOver() {
