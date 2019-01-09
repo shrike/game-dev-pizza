@@ -67,6 +67,12 @@ function sendButtons(socket, buttons) {
   io.emit('buttons', {buttons: buttons.buttons, playerId: buttons.playerId});
 }
 
+function sendBomb(socket, bomb) {
+
+  log.info("Emitting 'bomb': ", bomb);
+  io.emit('bomb', bomb);
+}
+
 function handleNewPlayer(socket) {
 
   log.info("handleNewPlayer");
@@ -93,6 +99,10 @@ function handleNewPlayer(socket) {
 
   socket.on('test', () => {
     log.warn('test received');
+  });
+
+  socket.on('bomb', (bomb) => {
+    sendBomb(socket, bomb);
   });
 }
 
