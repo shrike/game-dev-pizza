@@ -69,7 +69,9 @@ function sendButtons(socket, buttons) {
 }
 
 function handleNewPlayer(socket) {
-  
+
+  log.info("handleNewPlayer");
+
   const playerId = server.lastPlayderID;
   server.lastPlayderID += 1;
   socket.player = {
