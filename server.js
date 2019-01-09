@@ -35,33 +35,71 @@ function getAllPlayers(socket) {
   return players;
 }
 
-io.on('connection', (socket) => {
-  socket.on('newplayer', () => {
-    const playerId = server.lastPlayderID;
-    server.lastPlayderID += 1;
-    socket.player = {
-      id: playerId,
-      x: 96,
-      y: 96,
-    };
-    socket.emit('allplayers', getAllPlayers(socket));
-    socket.emit('myPlayer', socket.player);
+function sendAllPlayersToNewlyJoined(socket) {
+  
+  allOtherPlayers = getAllPlayers(socket);
+  log.info("Sending 'allplayers': " + allOtherPlayers.map((p) => p.id));
+  socket.emit('allplayers', allOtherPlayers);
+}
 
-    socket.broadcast.emit('newplayer', socket.player);
+function sendMyPlayer(socket) {
 
+  log.info("Sending 'myPlayer': ", socket.player);
+  socket.emit('myPlayer', socket.player);
+}
 
-    socket.on('disconnect', () => {
-      io.emit('remove', socket.player.id);
-    });
+function sendNewPlayerToExisting(socket) {
+
+  log.info("Broadcasting 'newplayer': ", socket.player);
+  socket.broadcast.emit('newplayer', socket.player);
+}
+
+function sendPlayerDisconnected(socket) {
+  
+  log.info("Emitting 'remove': ", socket.player.id);
+  io.emit('remove', socket.player.id);
+}
+
+function sendButtons(socket, buttons) {
+
+  //FIXME: this is Sir Spam-A-Lot
+  log.info("Emitting 'buttons': ", buttons);
+  socket.emit('buttons', {buttons: buttons.buttons, playerId: buttons.playerId});
+  socket.broadcast.emit('buttons', {buttons: buttons.buttons, playerId: buttons.playerId});
+}
+
+function handleNewPlayer(socket) {
+  
+  const playerId = server.lastPlayderID;
+  server.lastPlayderID += 1;
+  socket.player = {
+    id: playerId,
+    x: 96,
+    y: 96,
+  };
+
+  sendAllPlayersToNewlyJoined(socket);
+  sendMyPlayer(socket);
+  sendNewPlayerToExisting(socket);
+
+  socket.on('disconnect', () => {
+    sendPlayerDisconnected(socket);
   });
 
   socket.on('buttons', (buttons) => {
-    socket.emit('buttons', {buttons: buttons.buttons, playerId: buttons.playerId});
-    socket.broadcast.emit('buttons', {buttons: buttons.buttons, playerId: buttons.playerId});
+    sendButtons(socket, buttons);
   });
 
   socket.on('test', () => {
     log.warn('test received');
+  });
+}
+
+io.on('connection', (socket) => {
+  log.info("Received 'connection'");
+
+  socket.on('newplayer', () => {
+    handleNewPlayer(socket);
   });
 });
 
