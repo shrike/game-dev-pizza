@@ -63,9 +63,8 @@ function sendPlayerDisconnected(socket) {
 function sendButtons(socket, buttons) {
 
   //FIXME: this is Sir Spam-A-Lot
-  log.info("Emitting 'buttons': ", buttons);
-  socket.emit('buttons', {buttons: buttons.buttons, playerId: buttons.playerId});
-  socket.broadcast.emit('buttons', {buttons: buttons.buttons, playerId: buttons.playerId});
+  log.debug("Emitting 'buttons': ", buttons);
+  io.emit('buttons', {buttons: buttons.buttons, playerId: buttons.playerId});
 }
 
 function handleNewPlayer(socket) {
