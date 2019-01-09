@@ -17,6 +17,7 @@ export default class Main extends Phaser.State {
     this.initCurrentPlayer = this.initCurrentPlayer.bind(this);
     this.initAllPlayers = this.initAllPlayers.bind(this);
     this.addPlayer = this.addPlayer.bind(this);
+    this.showBomb = this.showBomb.bind(this);
     this.players = [];
    }
 
@@ -62,12 +63,14 @@ export default class Main extends Phaser.State {
 
     Client.socket.on("newplayer", this.addPlayer);
 
+    Client.socket.on("bomb", this.showBomb);
 
     Client.askNewPlayer();
 
     // Setup listener for window resize.
     // window.addEventListener('resize', throttle(this.resize.bind(this), 50), false);
   }
+
 
   initAllPlayers(players) {
       players.map((player) => {
@@ -213,14 +216,19 @@ export default class Main extends Phaser.State {
    * @param x
    * @param y
    */
-  addBomb(x, y, id) {
+  addBomb(x, y) {
+    Client.emitAddBomb(x, y);
+  }
+
+  showBomb({x, y}) {
+  
     const bomb = new Bomb({
       game: this.game,
       map: this.map,
       x,
       y,
       key: 'bomb',
-      id,
+      id: this.bombs.length,
       checkTile: this.checkTile,
       removeTile: this.removeTile,
       onExplode: (exploded) => {
@@ -231,10 +239,10 @@ export default class Main extends Phaser.State {
       onBurnTile: (fire) => {
         this.physics.arcade.enable(fire);
         this.explosions.push(fire);
-      }
+      },
     });
 
-    return bomb;
+    this.bombs.push(bomb);
   }
 
   /**
@@ -256,7 +264,7 @@ export default class Main extends Phaser.State {
     });
 
     if (this.aKey && this.aKey.isDown && !this.bombPlaced) {
-      this.bombs.push(this.addBomb(this.player.x, this.player.y, this.bombs.length));
+      this.addBomb(this.player.x, this.player.y);
       this.bombPlaced = true;
     }
     if (this.aKey && this.aKey.isUp) {

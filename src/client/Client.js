@@ -15,4 +15,8 @@ Client.askNewPlayer = function() {
   Client.socket.emit('newplayer');
 };
 
+Client.emitAddBomb = function(x, y) {
+  Client.socket.emit('bomb', {x, y});
+};
+
 export default Client;
