@@ -221,7 +221,6 @@ export default class Main extends Phaser.State {
   }
 
   showBomb({x, y}) {
-  
     const bomb = new Bomb({
       game: this.game,
       map: this.map,
@@ -255,7 +254,7 @@ export default class Main extends Phaser.State {
         if (this.players[k] === this.player) {
           this.gameOver();
         } else {
-          // TODO: remove that dude.
+          this.players[k].destroy();
         }
       });
       this.physics.arcade.collide(this.players[k], this.stonesLayer);
