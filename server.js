@@ -22,6 +22,8 @@ server.listen(process.env.PORT || 8081, () => {
   log.info(`Listening on ${server.address().port}`);
 });
 
+app.use('/', express.static(`${__dirname}/dist`));
+
 function getAllPlayers(socket) {
   const players = [];
   Object.keys(io.sockets.connected).forEach((socketID) => {

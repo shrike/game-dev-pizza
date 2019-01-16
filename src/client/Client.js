@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 
 const Client = {};
-Client.socket = io.connect('ws://127.0.0.1:7788');
+Client.socket = io.connect(window.location.href);
 
 Client.sendTest = function() {
   Client.socket.emit('test');
