@@ -34,6 +34,7 @@ export default class Player extends Phaser.Sprite {
     this.cursors = cursors;
 
     this.speed = 150;
+    this.animRate = 30;
     this.turned = false;
     this.turning = false;
 
@@ -48,6 +49,17 @@ export default class Player extends Phaser.Sprite {
       };
     });
 
+    let walk_l = this.animations.add('walk-left', [1,2,3,4]);
+    let walk_r = this.animations.add('walk-right', [5,6,7,8]);
+
+    let walk_u = this.animations.add('walk-up', [9]);
+    let walk_d = this.animations.add('walk-down', [0]);
+
+    [walk_d, walk_l, walk_r, walk_u].map((anim) => {
+
+      anim.enableUpdate = true;
+      anim.onUpdate.add(this.update, this);
+    })
   }
 
   /**
@@ -95,7 +107,18 @@ export default class Player extends Phaser.Sprite {
     this.turned = true;
     this.turning = false;
     this.current = direction;
-    this.frame = direction;
+
+    if (direction === Phaser.LEFT) {
+      this.animations.play('walk-left', this.animRate, true);
+    } else if (direction === Phaser.RIGHT) {
+      console.log("PLAY RIGHT");
+      this.animations.play('walk-right', this.animRate, true);
+    } else if (direction === Phaser.UP) {
+      this.animations.play('walk-up', this.animRate, true);
+    } else if (direction === Phaser.DOWN) {
+      this.animations.play('walk-down', this.animRate, true);
+    }
+
     return true;
   }
 
@@ -132,6 +155,10 @@ export default class Player extends Phaser.Sprite {
 
     this.turned = false;
 
+    if (this.animations.paused) {
+      this.animations.paused = false;
+    }
+
     if (this.current === Phaser.LEFT) {
       this.body.velocity.x = -this.speed;
       this.body.velocity.y = 0;
@@ -155,6 +182,7 @@ export default class Player extends Phaser.Sprite {
   stop() {
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
+    this.animations.paused = true;
   }
 
   /**
