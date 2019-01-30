@@ -49,11 +49,11 @@ export default class Player extends Phaser.Sprite {
       };
     });
 
-    let walk_l = this.animations.add('walk-left', [1,2,3,4]);
-    let walk_r = this.animations.add('walk-right', [5,6,7,8]);
+    let walk_l = this.animations.add('walk-left', [4,5,6,7]);
+    let walk_r = this.animations.add('walk-right', [8,9,10,11]);
 
-    let walk_u = this.animations.add('walk-up', [9]);
-    let walk_d = this.animations.add('walk-down', [0]);
+    let walk_u = this.animations.add('walk-up', [12,13,14,15]);
+    let walk_d = this.animations.add('walk-down', [0,1,2,3]);
 
     [walk_d, walk_l, walk_r, walk_u].map((anim) => {
 
@@ -108,18 +108,21 @@ export default class Player extends Phaser.Sprite {
     this.turning = false;
     this.current = direction;
 
-    if (direction === Phaser.LEFT) {
-      this.animations.play('walk-left', this.animRate, true);
-    } else if (direction === Phaser.RIGHT) {
-      console.log("PLAY RIGHT");
-      this.animations.play('walk-right', this.animRate, true);
-    } else if (direction === Phaser.UP) {
-      this.animations.play('walk-up', this.animRate, true);
-    } else if (direction === Phaser.DOWN) {
-      this.animations.play('walk-down', this.animRate, true);
-    }
+    this.animate();
 
     return true;
+  }
+
+  animate() {
+    if (this.current === Phaser.LEFT) {
+      this.animations.play('walk-left', this.animRate, true);
+    } else if (this.current === Phaser.RIGHT) {
+      this.animations.play('walk-right', this.animRate, true);
+    } else if (this.current === Phaser.UP) {
+      this.animations.play('walk-up', this.animRate, true);
+    } else if (this.current === Phaser.DOWN) {
+      this.animations.play('walk-down', this.animRate, true);
+    }
   }
 
   /**
@@ -155,8 +158,8 @@ export default class Player extends Phaser.Sprite {
 
     this.turned = false;
 
-    if (this.animations.paused) {
-      this.animations.paused = false;
+    if (this.animations.currentAnim.isFinished) {
+      this.animate();
     }
 
     if (this.current === Phaser.LEFT) {
@@ -182,7 +185,8 @@ export default class Player extends Phaser.Sprite {
   stop() {
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
-    this.animations.paused = true;
+    this.animations.currentAnim.stop();
+    this.frame = this.current * 4 + 3;
   }
 
   /**
