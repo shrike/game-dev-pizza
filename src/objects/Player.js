@@ -1,6 +1,6 @@
 /* eslint object-curly-newline: ["error", "never"] */
 /* eslint-env es6 */
-
+import Client from '../client/Client';
 /**
  * Setup and control base player.
  */
@@ -16,11 +16,13 @@ export default class Player extends Phaser.Sprite {
    * @param frame
    * @param cursors
    */
-  constructor({game, map, isTileFree, x, y, key, frame, cursors}) {
+  constructor({game, map, isTileFree, x, y, key, frame, cursors, id, isPlayerLocal}) {
     super(game, x, y, key, frame);
 
     this.map = map;
     this.isTileFree = isTileFree;
+    this.id = id;
+    this.isPlayerLocal = isPlayerLocal
 
     // Add the sprite to the game.
     this.game.add.existing(this);
@@ -32,13 +34,32 @@ export default class Player extends Phaser.Sprite {
     this.cursors = cursors;
 
     this.speed = 150;
+    this.animRate = 30;
     this.turned = false;
     this.turning = false;
 
     this.opposites = [Phaser.NONE, Phaser.RIGHT, Phaser.LEFT, Phaser.DOWN, Phaser.UP];
     this.pressedButtons = [false, false, false, false, false];
-
+    this.buttonsQueue = [];
     this.current = Phaser.DOWN;
+
+    Client.socket.on("buttons", (buttons) => {
+      if (id === buttons.playerId) {
+        this.buttonsQueue.push(buttons.buttons);
+      };
+    });
+
+    let walk_l = this.animations.add('walk-left', [4,5,6,7]);
+    let walk_r = this.animations.add('walk-right', [8,9,10,11]);
+
+    let walk_u = this.animations.add('walk-up', [12,13,14,15]);
+    let walk_d = this.animations.add('walk-down', [0,1,2,3]);
+
+    [walk_d, walk_l, walk_r, walk_u].map((anim) => {
+
+      anim.enableUpdate = true;
+      anim.onUpdate.add(this.update, this);
+    })
   }
 
   /**
@@ -86,31 +107,59 @@ export default class Player extends Phaser.Sprite {
     this.turned = true;
     this.turning = false;
     this.current = direction;
-    this.frame = direction;
+
+    this.animate();
+
     return true;
+  }
+
+  animate() {
+    if (this.current === Phaser.LEFT) {
+      this.animations.play('walk-left', this.animRate, true);
+    } else if (this.current === Phaser.RIGHT) {
+      this.animations.play('walk-right', this.animRate, true);
+    } else if (this.current === Phaser.UP) {
+      this.animations.play('walk-up', this.animRate, true);
+    } else if (this.current === Phaser.DOWN) {
+      this.animations.play('walk-down', this.animRate, true);
+    }
   }
 
   /**
    *
    */
   move() {
+
+    const event = this.buttonsQueue.shift();
+
+    if (!event) {
+      this.stop();
+      return;
+    }
+
     // if button pressed in new direction - check if we can turn
-    if (this.cursors.left.isDown && this.current !== Phaser.LEFT && !this.turned &&
+    if (event[Phaser.LEFT] && this.current !== Phaser.LEFT && !this.turned &&
       this.turn(Phaser.LEFT)) {
       ;
-    } else if (this.cursors.right.isDown && this.current !== Phaser.RIGHT && !this.turned &&
+    } else if (event[Phaser.RIGHT] && this.current !== Phaser.RIGHT && !this.turned &&
       this.turn(Phaser.RIGHT)) {
       ;
-    } else if (this.cursors.up.isDown && this.current !== Phaser.UP && !this.turned &&
+    } else if (event[Phaser.UP] && this.current !== Phaser.UP && !this.turned &&
       this.turn(Phaser.UP)) {
       ;
-    } else if (this.cursors.down.isDown && this.current !== Phaser.DOWN && !this.turned &&
+    } else if (event[Phaser.DOWN] && this.current !== Phaser.DOWN && !this.turned &&
       this.turn(Phaser.DOWN)) {
       ;
-    } else if (!this.pressedButtons[this.current]) {
+    } else if (!event[this.current]) {
       // else if button is pressed in current direction - continue, else stop
       this.stop();
       return;
+    }
+
+    this.turned = false;
+
+    if (this.animations.currentAnim.isFinished) {
+      this.animate();
     }
 
     if (this.current === Phaser.LEFT) {
@@ -136,6 +185,8 @@ export default class Player extends Phaser.Sprite {
   stop() {
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
+    this.animations.currentAnim.stop();
+    this.frame = this.current * 4 + 3;
   }
 
   /**
@@ -185,7 +236,14 @@ export default class Player extends Phaser.Sprite {
    *
    */
   update() {
-    this.checkButtons();
+    // Only the local player can be controlled via the keyboard
+    if (this.isPlayerLocal) {
+      this.checkButtons();
+      // if there's a button pressed, send the array or pressed to the server
+      if (this.pressedButtons.some(pressed => pressed)) {
+        Client.sendButtons({playerId: this.id, buttons: this.pressedButtons});
+      }
+    }
     this.calcGridPosition();
     this.move();
   }

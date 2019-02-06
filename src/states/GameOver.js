@@ -15,7 +15,8 @@ export default class GameOver extends Phaser.State {
 
     this.game.input.keyboard.onDownCallback = () => {
       this.game.input.keyboard.onDownCallback = null;
-      this.game.state.start('MainMenu');
+      // HACK FIX: if we restart the game here, we end up with a new player for the same browser window
+      // this.game.state.start('MainMenu');
     };
   }
 
