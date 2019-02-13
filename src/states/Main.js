@@ -19,12 +19,31 @@ export default class Main extends Phaser.State {
     this.addPlayer = this.addPlayer.bind(this);
     this.showBomb = this.showBomb.bind(this);
     this.players = [];
+    this.explosions = [];
+    this.bombs = [];
+    this.bombPlaced = false;
+    this.aKey = null;
    }
 
   /**
    * Setup all objects, etc needed for the main game state.
    */
   create() {
+
+    // // Enable arcade physics.
+    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+
+    Client.socket.on("myPlayer", this.initCurrentPlayer);
+
+    Client.socket.on("allplayers", this.initAllPlayers);
+
+    // XXX We no longer support adding players once the game is started
+    Client.socket.on("newplayer", this.addPlayer);
+
+    Client.socket.on("bomb", this.showBomb);
+
+    Client.socket.on("gameStarted", this.gameStarted);
+
     this.map = this.add.tilemap(this.game.mapName);
     this.map.addTilesetImage('tiles', this.game.mapName);
 
@@ -40,38 +59,25 @@ export default class Main extends Phaser.State {
         this.game.math.snapToFloor(Math.floor(point.x), this.gridsize) / this.gridsize,
         this.game.math.snapToFloor(Math.floor(point.y), this.gridsize) / this.gridsize);
     };
-
-
-    this.explosions = [];
-    this.bombs = [];
-    this.bombPlaced = false;
-
+  
     this.backgroundLayer = this.map.createLayer('background');
     this.stonesLayer = this.map.createLayer('stones');
     this.bricksLayer = this.map.createLayer('bricks');
 
     this.map.setCollision(4, true, this.stonesLayer);
     this.map.setCollision(3, true, this.bricksLayer);
-    this.aKey = null;
 
-    // // Enable arcade physics.
-    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+    this.initCurrentPlayer(this.game.players['me']);
 
+    const otherPlayers = Object.keys(this.game.players)
+      .filter((key) => key != 'me')
+      .map((key) => this.game.players[key]);
 
-    Client.socket.on("myPlayer", this.initCurrentPlayer);
-
-    Client.socket.on("allplayers", this.initAllPlayers);
-
-    Client.socket.on("newplayer", this.addPlayer);
-
-    Client.socket.on("bomb", this.showBomb);
-
-    Client.askNewPlayer();
+    this.initAllPlayers(otherPlayers);
 
     // Setup listener for window resize.
     // window.addEventListener('resize', throttle(this.resize.bind(this), 50), false);
   }
-
 
   initAllPlayers(players) {
       players.map((player) => {

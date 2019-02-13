@@ -27,10 +27,25 @@ app.use('/', express.static(`${__dirname}/dist`));
 function getAllPlayers(socket) {
   const players = [];
   Object.keys(io.sockets.connected).forEach((socketID) => {
-    if (socket !== io.sockets.connected[socketID]) {
+    if (socket === null || socket !== io.sockets.connected[socketID]) {
       const player = io.sockets.connected[socketID].player;
       if (player) {
         players.push(player);
+      }
+    }
+  });
+  return players;
+}
+
+function getAllPlayersMap(socket) {
+  const players = {};
+  Object.keys(io.sockets.connected).forEach((socketID) => {
+    const player = io.sockets.connected[socketID].player;
+    if (player) {
+      if (socket === null || socket !== io.sockets.connected[socketID]) {
+          players[player.id] = player;
+      } else {
+        players['me'] = player;
       }
     }
   });
@@ -75,6 +90,27 @@ function sendBomb(socket, bomb) {
   io.emit('bomb', bomb);
 }
 
+function sendPlayers(socket) {
+
+  players = getAllPlayersMap(socket);
+  socket.emit('players', players);
+}
+
+function emitPlayers() {
+
+  log.info("Emitting 'players'");
+  Object.keys(io.sockets.connected).forEach((socketID) => {
+    const socket = io.sockets.connected[socketID];
+    sendPlayers(socket);
+  });
+}
+
+function startGame(mapName) {
+
+  log.info("Emitting 'gameStarted': ", mapName);
+  io.emit('gameStarted', mapName);
+}
+
 function handleNewPlayer(socket) {
 
   log.info("handleNewPlayer");
@@ -87,9 +123,10 @@ function handleNewPlayer(socket) {
     y: 96,
   };
 
-  sendAllPlayersToNewlyJoined(socket);
-  sendMyPlayer(socket);
-  sendNewPlayerToExisting(socket);
+  // sendAllPlayersToNewlyJoined(socket);
+  // sendMyPlayer(socket);
+  // sendNewPlayerToExisting(socket);
+  emitPlayers();
 
   socket.on('disconnect', () => {
     sendPlayerDisconnected(socket);
@@ -106,12 +143,21 @@ function handleNewPlayer(socket) {
   socket.on('bomb', (bomb) => {
     sendBomb(socket, bomb);
   });
+
+  socket.on('startGame', (mapName) => {
+    log.info('Received startGame ' + mapName);
+    startGame(mapName);
+  });
 }
 
 io.on('connection', (socket) => {
   log.info("Received 'connection'");
 
   socket.on('newplayer', () => {
+    handleNewPlayer(socket);
+  });
+
+  socket.on('join', () => {
     handleNewPlayer(socket);
   });
 });

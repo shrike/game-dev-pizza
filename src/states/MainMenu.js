@@ -1,4 +1,24 @@
+import Client from '../client/Client';
+
 export default class MainMenu extends Phaser.State {
+
+  constructor() {
+    super();
+
+    Client.socket.on("players", (players) => {
+
+      console.log('Updating players... ', players);
+      this.txt.text = `Players: ${Object.keys(players).length}`
+      this.game.players = players;
+    });
+
+    Client.socket.on("gameStarted", (mapName) => {
+      console.log("Received 'gameStarted'", mapName);
+      this.game.mapName = mapName;
+      this.game.state.start('Main');
+    });
+  }
+
   preload() {
     const gameOverText = 'MAIN MENU';
     const textStyle = {font: '50px 8BitCrash', fill: '#F2F2F2', align: 'center'};
@@ -14,14 +34,16 @@ export default class MainMenu extends Phaser.State {
     const maps = this.game.cache.getJSON('maps');
     maps.maps.forEach((map) => {
       this.addMenuOption(map.name, () => {
-        this.game.mapName = map.name;
-        this.game.state.start('Main');
+        Client.startGame(map.name);
       });
     });
+
+    this.addConnInfo();
   }
 
   create() {
     this.stateText.visible = true;
+    Client.sendJoin();
   }
 
   addMenuOption(text, callback) {
@@ -48,5 +70,18 @@ export default class MainMenu extends Phaser.State {
     txt.events.onInputOver.add(onOver);
     txt.events.onInputOut.add(onOut);
     this.optionCount += 1;
+  }
+
+  addConnInfo() {
+    const style = {
+      font: '20px 8BitCrash',
+      fill: 'white',
+      align: 'right',
+      stroke: 'rgba(0,0,0,0)',
+      strokeThickness: 4,
+    };
+
+    const text = "Players: ";
+    this.txt = this.game.add.text(this.game.world.width-200, this.game.world.height-100, text, style);
   }
 }
