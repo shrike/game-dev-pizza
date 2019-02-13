@@ -10,7 +10,8 @@ export default class Main extends Phaser.State {
 
   constructor() {
     super();
-    this.isTileFree = this.isTileFree.bind(this);
+    this.isTileBrickFree = this.isTileBrickFree.bind(this);
+    this.isTileBombFree = this.isTileBombFree.bind(this);
     this.checkTile = this.checkTile.bind(this);
     this.removeTile = this.removeTile.bind(this);
     this.isTileRemovable = this.isTileRemovable.bind(this);
@@ -85,7 +86,7 @@ export default class Main extends Phaser.State {
         game: this.game,
         key: 'player',
         map: this.map,
-        isTileFree: this.isTileFree,
+        isTileBrickFree: this.isTileBrickFree,
         x:  96,
         y:  96,
         cursors: null,
@@ -105,7 +106,7 @@ export default class Main extends Phaser.State {
       game: this.game,
       key: 'player',
       map: this.map,
-      isTileFree: this.isTileFree,
+      isTileBrickFree: this.isTileBrickFree,
       x: 96, // this.game.world.centerX,
       y: 96, // this.game.world.centerY,
       cursors: null,
@@ -124,7 +125,7 @@ export default class Main extends Phaser.State {
       game: this.game,
       key: 'player',
       map: this.map,
-      isTileFree: this.isTileFree,
+      isTileBrickFree: this.isTileBrickFree,
       x: 96, // this.game.world.centerX,
       y: 96, // this.game.world.centerY,
       cursors: this.input.keyboard.createCursorKeys(),
@@ -143,15 +144,24 @@ export default class Main extends Phaser.State {
   /**
    * @param {integer} tileX X coordinate to check.
    * @param {integer} tileY Y coordinate to check.
-   * @returns true if the tile with the given coordinates is free (no bomb, no bricks)
+   * @returns true if the tile with the given coordinates is free of bricks
    */
-  isTileFree(tileX, tileY) {
+  isTileBrickFree(tileX, tileY) {
     if (this.map.getTile(tileX, tileY, this.bricksLayer)) {
       return false;
     }
     if (this.map.getTile(tileX, tileY, this.stonesLayer)) {
       return false;
     }
+    return true;
+  }
+
+  /**
+   * @param {integer} tileX X coordinate to check.
+   * @param {integer} tileY Y coordinate to check.
+   * @returns true if the tile with the given coordinates is free of bombs
+   */
+  isTileBombFree(tileX, tileY) {
     if (this.bombs.some(bomb => bomb.marker.x === tileX && bomb.marker.y === tileY)) {
       return false;
     }
@@ -167,7 +177,7 @@ export default class Main extends Phaser.State {
    *  2 if the tile contains wall
    */
   checkTile(tileX, tileY) {
-    if (this.isTileFree(tileX, tileY)) {
+    if (this.isTileBrickFree(tileX, tileY) && this.isTileBombFree(tileX, tileY)) {
       return 0;
     }
     // Check if bricks

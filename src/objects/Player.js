@@ -9,18 +9,18 @@ export default class Player extends Phaser.Sprite {
    *
    * @param game
    * @param map
-   * @param isTileFree
+   * @param isTileBrickFree
    * @param x
    * @param y
    * @param key
    * @param frame
    * @param cursors
    */
-  constructor({game, map, isTileFree, x, y, key, frame, cursors, id, isPlayerLocal}) {
+  constructor({game, map, isTileBrickFree, x, y, key, frame, cursors, id, isPlayerLocal}) {
     super(game, x, y, key, frame);
 
     this.map = map;
-    this.isTileFree = isTileFree;
+    this.isTileBrickFree = isTileBrickFree;
     this.id = id;
     this.isPlayerLocal = isPlayerLocal
 
@@ -73,13 +73,13 @@ export default class Player extends Phaser.Sprite {
     const bottom = this.map.getTileWorldXY(this.centerX, this.bottom + 1);
 
     if (direction === Phaser.LEFT) {
-      return this.isTileFree(left.x, left.y);
+      return this.isTileBrickFree(left.x, left.y);
     } else if (direction === Phaser.RIGHT) {
-      return this.isTileFree(right.x, right.y);
+      return this.isTileBrickFree(right.x, right.y);
     } else if (direction === Phaser.UP) {
-      return this.isTileFree(top.x, top.y);
+      return this.isTileBrickFree(top.x, top.y);
     } else if (direction === Phaser.DOWN) {
-      return this.isTileFree(bottom.x, bottom.y);
+      return this.isTileBrickFree(bottom.x, bottom.y);
     }
 
     return false;
