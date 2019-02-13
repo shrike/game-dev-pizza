@@ -237,7 +237,9 @@ export default class Main extends Phaser.State {
         });
       },
       onBurnTile: (fire) => {
+
         this.physics.arcade.enable(fire);
+        fire.body.setSize(50,50,7,7);
         this.explosions.push(fire);
       },
     });
