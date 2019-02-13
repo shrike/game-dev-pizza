@@ -241,6 +241,7 @@ export default class Main extends Phaser.State {
         this.explosions.push(fire);
       },
     });
+    this.game.physics.enable(bomb);
 
     this.bombs.push(bomb);
   }
