@@ -43,8 +43,6 @@ export default class Main extends Phaser.State {
 
     Client.socket.on("bomb", this.showBomb);
 
-    Client.socket.on("gameStarted", this.gameStarted);
-
     this.map = this.add.tilemap(this.game.mapName);
     this.map.addTilesetImage('tiles', this.game.mapName);
 
