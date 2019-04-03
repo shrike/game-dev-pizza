@@ -130,27 +130,20 @@ export default class Player extends Phaser.Sprite {
    */
   move() {
 
-    const event = this.buttonsQueue.shift();
-
-    if (!event) {
-      this.stop();
-      return;
-    }
-
     // if button pressed in new direction - check if we can turn
-    if (event[Phaser.LEFT] && this.current !== Phaser.LEFT && !this.turned &&
+    if (this.pressedButtons[Phaser.LEFT] && this.current !== Phaser.LEFT && !this.turned &&
       this.turn(Phaser.LEFT)) {
       ;
-    } else if (event[Phaser.RIGHT] && this.current !== Phaser.RIGHT && !this.turned &&
+    } else if (this.pressedButtons[Phaser.RIGHT] && this.current !== Phaser.RIGHT && !this.turned &&
       this.turn(Phaser.RIGHT)) {
       ;
-    } else if (event[Phaser.UP] && this.current !== Phaser.UP && !this.turned &&
+    } else if (this.pressedButtons[Phaser.UP] && this.current !== Phaser.UP && !this.turned &&
       this.turn(Phaser.UP)) {
       ;
-    } else if (event[Phaser.DOWN] && this.current !== Phaser.DOWN && !this.turned &&
+    } else if (this.pressedButtons[Phaser.DOWN] && this.current !== Phaser.DOWN && !this.turned &&
       this.turn(Phaser.DOWN)) {
       ;
-    } else if (!event[this.current]) {
+    } else if (!this.pressedButtons[this.current]) {
       // else if button is pressed in current direction - continue, else stop
       this.stop();
       return;
@@ -243,8 +236,8 @@ export default class Player extends Phaser.Sprite {
       if (this.pressedButtons.some(pressed => pressed)) {
         Client.sendButtons({playerId: this.id, buttons: this.pressedButtons});
       }
+      this.calcGridPosition();
+      this.move();
     }
-    this.calcGridPosition();
-    this.move();
   }
 }

@@ -232,7 +232,7 @@ export default class Main extends Phaser.State {
    * @param y
    */
   addBomb(x, y) {
-    Client.emitAddBomb(x, y);
+    this.showBomb({x, y});
   }
 
   showBomb({x, y}) {
