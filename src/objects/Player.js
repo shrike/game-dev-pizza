@@ -60,6 +60,8 @@ export default class Player extends Phaser.Sprite {
       anim.enableUpdate = true;
       anim.onUpdate.add(this.update, this);
     })
+
+    this.lastPosition = {};
   }
 
   /**
@@ -225,6 +227,15 @@ export default class Player extends Phaser.Sprite {
     this.pressedButtons[Phaser.DOWN] = this.cursors.down.isDown;
   }
 
+  sendPosition() {
+
+    if (this.lastPosition.x !== this.position.x || this.lastPosition.y !== this.position.y) {
+      this.lastPosition.x = this.position.x;
+      this.lastPosition.y = this.position.y;
+      Client.sendPosition(this.position);
+    }
+  }
+
   /**
    *
    */
@@ -232,12 +243,13 @@ export default class Player extends Phaser.Sprite {
     // Only the local player can be controlled via the keyboard
     if (this.isPlayerLocal) {
       this.checkButtons();
-      // if there's a button pressed, send the array or pressed to the server
-      if (this.pressedButtons.some(pressed => pressed)) {
-        Client.sendButtons({playerId: this.id, buttons: this.pressedButtons});
-      }
+      // // if there's a button pressed, send the array or pressed to the server
+      // if (this.pressedButtons.some(pressed => pressed)) {
+      //   Client.sendButtons({playerId: this.id, buttons: this.pressedButtons});
+      // }
       this.calcGridPosition();
       this.move();
+      this.sendPosition();
     }
   }
 }

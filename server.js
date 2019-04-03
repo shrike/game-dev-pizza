@@ -77,11 +77,11 @@ function sendPlayerDisconnected(socket) {
   io.emit('remove', socket.player.id);
 }
 
-function sendButtons(socket, buttons) {
+function sendPosition(socket, position) {
 
   //FIXME: this is Sir Spam-A-Lot
-  log.debug("Emitting 'buttons': ", buttons);
-  io.emit('buttons', {buttons: buttons.buttons, playerId: buttons.playerId});
+  log.info("Emitting 'position': ", position);
+  socket.broadcast.emit('position', position);
 }
 
 function sendBomb(socket, bomb) {
@@ -132,8 +132,8 @@ function handleNewPlayer(socket) {
     sendPlayerDisconnected(socket);
   });
 
-  socket.on('buttons', (buttons) => {
-    sendButtons(socket, buttons);
+  socket.on('position', (position) => {
+    sendPosition(socket, {position: position, playerId: playerId});
   });
 
   socket.on('test', () => {

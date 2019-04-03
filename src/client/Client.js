@@ -7,8 +7,8 @@ Client.sendTest = function() {
   Client.socket.emit('test');
 };
 
-Client.sendButtons = function(buttons) {
-  Client.socket.emit('buttons', buttons);
+Client.sendPosition = function(position) {
+  Client.socket.emit('position', position);
 };
 
 Client.askNewPlayer = function() {
