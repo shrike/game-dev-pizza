@@ -43,9 +43,9 @@ export default class Player extends Phaser.Sprite {
     this.buttonsQueue = [];
     this.current = Phaser.DOWN;
 
-    Client.socket.on("buttons", (buttons) => {
-      if (id === buttons.playerId) {
-        this.buttonsQueue.push(buttons.buttons);
+    Client.socket.on("position", (position) => {
+      if (id === position.playerId) {
+        this.position = position.position;
       };
     });
 

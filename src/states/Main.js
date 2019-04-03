@@ -58,7 +58,7 @@ export default class Main extends Phaser.State {
         this.game.math.snapToFloor(Math.floor(point.x), this.gridsize) / this.gridsize,
         this.game.math.snapToFloor(Math.floor(point.y), this.gridsize) / this.gridsize);
     };
-  
+
     this.backgroundLayer = this.map.createLayer('background');
     this.stonesLayer = this.map.createLayer('stones');
     this.bricksLayer = this.map.createLayer('bricks');
@@ -233,9 +233,10 @@ export default class Main extends Phaser.State {
    */
   addBomb(x, y) {
     this.showBomb({x, y});
+    Client.emitAddBomb(x, y);
   }
 
-  showBomb({x, y}) {
+  showBomb({x, y, playerId}) {
     const bomb = new Bomb({
       game: this.game,
       map: this.map,
