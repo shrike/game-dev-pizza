@@ -181,7 +181,11 @@ export default class Player extends Phaser.Sprite {
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
     this.animations.currentAnim.stop();
-    this.frame = this.current * 4 + 3;
+    this.frame = 16 + this.current;
+    // Phaser.DOWN == 4 not 0; gawddamn
+    if (this.current === Phaser.DOWN) {
+      this.frame = 16;
+    }
   }
 
   /**
