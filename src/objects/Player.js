@@ -63,7 +63,7 @@ export default class Player extends Phaser.Sprite {
           this.current = Phaser.UP;
           this.animate();
         } else {
-          this.stop();
+          this.stopAnimation();
         }
       };
     });
@@ -208,7 +208,13 @@ export default class Player extends Phaser.Sprite {
   stop() {
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
-    this.animations.currentAnim.stop();
+    this.stopAnimation();
+  }
+
+  stopAnimation() {
+    if (this.animations.currentAnim) {
+      this.animations.currentAnim.stop();
+    }
     this.frame = 16 + this.current;
     // Phaser.DOWN == 4 not 0; gawddamn
     if (this.current === Phaser.DOWN) {
