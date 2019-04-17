@@ -38,9 +38,6 @@ export default class Main extends Phaser.State {
 
     Client.socket.on("allplayers", this.initAllPlayers);
 
-    // XXX We no longer support adding players once the game is started
-    Client.socket.on("newplayer", this.addPlayer);
-
     Client.socket.on("bomb", this.showBomb);
 
     this.map = this.add.tilemap(this.game.mapName);

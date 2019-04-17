@@ -82,6 +82,8 @@ export default class Player extends Phaser.Sprite {
 
     this.lastPosition = {};
     this.stopSent = false;
+    const playerTints = [0xffffff, 0xffaa00, 0xff00aa, 0x9944ff, 0x4f4f4e, 0x33a0ff];
+    this.tint = playerTints[id % 6];
   }
 
   /**
