@@ -45,7 +45,26 @@ export default class Player extends Phaser.Sprite {
 
     Client.socket.on("position", (position) => {
       if (id === position.playerId) {
+        // record the position before we update it
+        this.lastPosition.x = this.position.x;
+        this.lastPosition.y = this.position.y;
+        // update position
         this.position = position.position;
+        if (this.position.x > this.lastPosition.x) {
+          this.current = Phaser.RIGHT;
+          this.animate();
+        } else if (this.position.x < this.lastPosition.x) {
+          this.current = Phaser.LEFT;
+          this.animate();
+        } else if (this.position.y > this.lastPosition.y) {
+          this.current = Phaser.DOWN;
+          this.animate();
+        } else if (this.position.y < this.lastPosition.y) {
+          this.current = Phaser.RIGHT;
+          this.animate();
+        } else {
+          this.stop();
+        }
       };
     });
 
@@ -62,6 +81,7 @@ export default class Player extends Phaser.Sprite {
     })
 
     this.lastPosition = {};
+    this.stopSent = false;
   }
 
   /**
@@ -148,8 +168,14 @@ export default class Player extends Phaser.Sprite {
     } else if (!this.pressedButtons[this.current]) {
       // else if button is pressed in current direction - continue, else stop
       this.stop();
+      if (!this.stopSent) {
+        Client.sendPosition(this.position);
+        this.stopSent = true;
+      }
       return;
     }
+
+    this.stopSent = false;
 
     this.turned = false;
 
@@ -237,6 +263,7 @@ export default class Player extends Phaser.Sprite {
       this.lastPosition.x = this.position.x;
       this.lastPosition.y = this.position.y;
       Client.sendPosition(this.position);
+      this.stopSent = false;
     }
   }
 
