@@ -17,6 +17,7 @@ export default class Main extends Phaser.State {
     this.isTileRemovable = this.isTileRemovable.bind(this);
     this.initCurrentPlayer = this.initCurrentPlayer.bind(this);
     this.initAllPlayers = this.initAllPlayers.bind(this);
+    this.playerDied = this.playerDied.bind(this);
     this.addPlayer = this.addPlayer.bind(this);
     this.showBomb = this.showBomb.bind(this);
     this.players = [];
@@ -39,6 +40,7 @@ export default class Main extends Phaser.State {
     Client.socket.on("allplayers", this.initAllPlayers);
 
     Client.socket.on("bomb", this.showBomb);
+    Client.socket.on("playerDied", this.playerDied);
 
     this.map = this.add.tilemap(this.game.mapName);
     this.map.addTilesetImage('tiles', this.game.mapName);
@@ -95,8 +97,18 @@ export default class Main extends Phaser.State {
     });
   }
 
-  addPlayer(player) {
+  playerDied({id}) {
+    this.players.some((p) => {
+      if (p.id === id) {
+        p.destroy();
+        return true;
+      }
+      return false;
+    });
 
+  }
+
+  addPlayer(player) {
     const newPlayer = new Player({
       game: this.game,
       key: 'player',
@@ -266,12 +278,8 @@ export default class Main extends Phaser.State {
   update() {
 
     Object.keys(this.players).forEach((k) => {
-      this.game.physics.arcade.overlap(this.players[k], this.explosions, () => {
-        if (this.players[k] === this.player) {
+      this.game.physics.arcade.overlap(this.player, this.explosions, () => {
           this.gameOver();
-        } else {
-          this.players[k].destroy();
-        }
       });
       this.physics.arcade.collide(this.players[k], this.stonesLayer);
       this.physics.arcade.collide(this.players[k], this.bricksLayer);
@@ -288,6 +296,7 @@ export default class Main extends Phaser.State {
   }
 
   gameOver() {
+    Client.emitGameOver(this.player.id);
     this.game.state.start('GameOver');
   }
 }

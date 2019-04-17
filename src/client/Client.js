@@ -19,12 +19,17 @@ Client.emitAddBomb = function(x, y) {
   Client.socket.emit('bomb', {x, y});
 };
 
+Client.emitGameOver = function(id) {
+  Client.socket.emit('playerGameOver', {id});
+};
+
+
 Client.sendJoin = function() {
   Client.socket.emit('join');
 };
 
 Client.startGame = function(mapName) {
-  console.log(`Emitting startGame "${mapName}"`)
+  console.log(`Emitting startGame "${mapName}"`);
   Client.socket.emit('startGame', mapName);
 }
 

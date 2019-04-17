@@ -90,6 +90,13 @@ function sendBomb(socket, bomb) {
   socket.broadcast.emit('bomb', bomb);
 }
 
+function sendDied(socket, player) {
+
+  log.info("Emitting 'died': ", player);
+  socket.broadcast.emit('playerDied', player);
+}
+
+
 function sendPlayers(socket) {
 
   players = getAllPlayersMap(socket);
@@ -142,6 +149,10 @@ function handleNewPlayer(socket) {
 
   socket.on('bomb', (bomb) => {
     sendBomb(socket, bomb);
+  });
+
+  socket.on('playerGameOver', (player) => {
+    sendDied(socket, player);
   });
 
   socket.on('startGame', (mapName) => {
