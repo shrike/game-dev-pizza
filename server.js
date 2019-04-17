@@ -53,7 +53,7 @@ function getAllPlayersMap(socket) {
 }
 
 function sendAllPlayersToNewlyJoined(socket) {
-  
+
   allOtherPlayers = getAllPlayers(socket);
   log.info("Sending 'allplayers': " + allOtherPlayers.map((p) => p.id));
   socket.emit('allplayers', allOtherPlayers);
@@ -72,7 +72,7 @@ function sendNewPlayerToExisting(socket) {
 }
 
 function sendPlayerDisconnected(socket) {
-  
+
   log.info("Emitting 'remove': ", socket.player.id);
   io.emit('remove', socket.player.id);
 }
@@ -87,7 +87,7 @@ function sendPosition(socket, position) {
 function sendBomb(socket, bomb) {
 
   log.info("Emitting 'bomb': ", bomb);
-  io.emit('bomb', bomb);
+  socket.broadcast.emit('bomb', bomb);
 }
 
 function sendPlayers(socket) {
