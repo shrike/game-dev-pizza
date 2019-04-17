@@ -60,7 +60,7 @@ export default class Player extends Phaser.Sprite {
           this.current = Phaser.DOWN;
           this.animate();
         } else if (this.position.y < this.lastPosition.y) {
-          this.current = Phaser.RIGHT;
+          this.current = Phaser.UP;
           this.animate();
         } else {
           this.stop();
@@ -274,10 +274,6 @@ export default class Player extends Phaser.Sprite {
     // Only the local player can be controlled via the keyboard
     if (this.isPlayerLocal) {
       this.checkButtons();
-      // // if there's a button pressed, send the array or pressed to the server
-      // if (this.pressedButtons.some(pressed => pressed)) {
-      //   Client.sendButtons({playerId: this.id, buttons: this.pressedButtons});
-      // }
       this.calcGridPosition();
       this.move();
       this.sendPosition();
