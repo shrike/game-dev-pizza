@@ -25,22 +25,22 @@ export default class Main extends Phaser.State {
     this.bombs = [];
     this.bombPlaced = false;
     this.aKey = null;
-   }
-
-  /**
-   * Setup all objects, etc needed for the main game state.
-   */
-  create() {
-
-    // // Enable arcade physics.
-    this.game.physics.startSystem(Phaser.Physics.ARCADE);
-
     Client.socket.on("myPlayer", this.initCurrentPlayer);
 
     Client.socket.on("allplayers", this.initAllPlayers);
 
     Client.socket.on("bomb", this.showBomb);
     Client.socket.on("playerDied", this.playerDied);
+   }
+
+  /**
+   * Setup all objects, etc needed for the main game state.
+   */
+  create() {
+    // // Enable arcade physics.
+    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+
+
 
     this.map = this.add.tilemap(this.game.mapName);
     this.map.addTilesetImage('tiles', this.game.mapName);
