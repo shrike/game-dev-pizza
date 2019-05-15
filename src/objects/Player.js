@@ -287,4 +287,9 @@ export default class Player extends Phaser.Sprite {
       this.sendPosition();
     }
   }
+  
+  takeBonus(bonus) {
+    console.log("TAKE-A BONUS-A");
+    bonus.destroy();
+  }
 }

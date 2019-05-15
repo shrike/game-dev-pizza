@@ -1,7 +1,8 @@
 // import throttle from 'lodash.throttle';
 import Player from '../objects/Player';
-import Bomb from '../objects/Bomb';
+import { Bomb } from '../objects/Bomb';
 import Client from '../client/Client';
+import { Bonus } from '../objects/Bomb';
 
 /**
  * Setup and display the main game state.
@@ -23,6 +24,7 @@ export default class Main extends Phaser.State {
     this.players = [];
     this.explosions = [];
     this.bombs = [];
+    this.bonuses = [];
     this.bombPlaced = false;
     this.aKey = null;
     Client.socket.on("myPlayer", this.initCurrentPlayer);
@@ -39,8 +41,6 @@ export default class Main extends Phaser.State {
   create() {
     // // Enable arcade physics.
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
-
-
 
     this.map = this.add.tilemap(this.game.mapName);
     this.map.addTilesetImage('tiles', this.game.mapName);
@@ -142,10 +142,20 @@ export default class Main extends Phaser.State {
 
     this.physics.arcade.enable(this.player);
 
+    const bonus = new Bonus({
+      game: this.game,
+      key: 'bonus-bomb',
+      x: 96+2*64, // this.game.world.centerX,
+      y: 96, // this.game.world.centerY,
+    });
+
+    this.physics.arcade.enable(bonus);
+
+    this.bonuses.push(bonus);
+
     this.players[player.id] = this.player;
 
     this.aKey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
-
   }
 
   /**
@@ -280,6 +290,9 @@ export default class Main extends Phaser.State {
     Object.keys(this.players).forEach((k) => {
       this.game.physics.arcade.overlap(this.player, this.explosions, () => {
           this.gameOver();
+      });
+      this.game.physics.arcade.overlap(this.player, this.bonuses, (player, bonus) => {
+        player.takeBonus(bonus);
       });
       this.physics.arcade.collide(this.players[k], this.stonesLayer);
       this.physics.arcade.collide(this.players[k], this.bricksLayer);
