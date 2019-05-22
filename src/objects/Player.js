@@ -43,6 +43,8 @@ export default class Player extends Phaser.Sprite {
     this.buttonsQueue = [];
     this.current = Phaser.DOWN;
 
+    this.flameLength = 1;
+
     Client.socket.on("position", (position) => {
       if (id === position.playerId) {
         // record the position before we update it
@@ -289,7 +291,7 @@ export default class Player extends Phaser.Sprite {
   }
   
   takeBonus(bonus) {
-    console.log("TAKE-A BONUS-A");
     bonus.destroy();
+    this.flameLength += 1;
   }
 }

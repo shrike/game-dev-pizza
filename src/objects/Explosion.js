@@ -15,7 +15,7 @@ export default class Explosion extends Phaser.Sprite {
    * @param frame
    * @param cursors
    */
-  constructor({game, x, y, key, checkTile, removeTile, map, onBurnTile}) {
+  constructor({game, x, y, key, checkTile, removeTile, map, onBurnTile, flameLength}) {
 
     const frames = {
       F1111: 0,
@@ -59,6 +59,7 @@ export default class Explosion extends Phaser.Sprite {
     this.checkTile = checkTile;
     this.removeTile = removeTile;
     this.tail = [];
+    this.flameLength = flameLength;
     onBurnTile(this);
     this.onBurnTile = onBurnTile;
     this.expand();
@@ -71,22 +72,21 @@ export default class Explosion extends Phaser.Sprite {
       right: false,
       up: false,
       down: false};
-    const maxLen = 4;
-    for (let c = 1; c <= maxLen; c += 1) {
+    for (let c = 1; c <= this.flameLength; c += 1) {
       if (!blocked.left) {
-        blocked.left = !this.expandTailX(-c, c === maxLen);
+        blocked.left = !this.expandTailX(-c, c === this.flameLength);
       }
 
       if (!blocked.right) {
-        blocked.right = !this.expandTailX(c, c === maxLen);
+        blocked.right = !this.expandTailX(c, c === this.flameLength);
       }
 
       if (!blocked.up) {
-        blocked.up = !this.expandTailY(c, c === maxLen);
+        blocked.up = !this.expandTailY(c, c === this.flameLength);
       }
 
       if (!blocked.down) {
-        blocked.down = !this.expandTailY(-c, c === maxLen);
+        blocked.down = !this.expandTailY(-c, c === this.flameLength);
       }
     }
   }

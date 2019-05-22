@@ -16,7 +16,7 @@ export class Bomb extends Phaser.Sprite {
    * @param frame
    * @param cursors
    */
-  constructor({game, map, x, y, key, frame, id, onExplode, checkTile, removeTile, onBurnTile}) {
+  constructor({game, map, x, y, key, frame, id, onExplode, checkTile, removeTile, onBurnTile, flameLength}) {
     super(
       game,
       game.math.snapToFloor(x, map.gridsize) + (map.gridsize / 2),
@@ -36,6 +36,7 @@ export class Bomb extends Phaser.Sprite {
     this.removeTile = removeTile;
     this.exploded = false;
     this.onBurnTile = onBurnTile;
+    this.flameLength = flameLength;
   }
 
   /**
@@ -66,6 +67,7 @@ export class Bomb extends Phaser.Sprite {
       removeTile: this.removeTile,
       map: this.map,
       onBurnTile: this.onBurnTile,
+      flameLength: this.flameLength,
     });
 
     this.game.time.events.add(Phaser.Timer.SECOND * 2, () => explosion.destroy(true), this);
@@ -95,8 +97,17 @@ export class Bonus extends Phaser.Sprite {
     this.game.add.existing(this);
     this.anchor.setTo(0.5);
   }
+}
 
-  update() {
+export class BonusBomb extends Bonus {
+
+  constructor({game, map, x, y}) {
+    console.log(x);
+    super({
+      game: game,
+      x: x,
+      y: y,
+      key: 'bonus-bomb'
+    });
   }
-
 }

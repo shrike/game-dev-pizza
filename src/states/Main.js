@@ -1,8 +1,8 @@
 // import throttle from 'lodash.throttle';
 import Player from '../objects/Player';
+import { BonusBomb } from '../objects/Bomb';
 import { Bomb } from '../objects/Bomb';
 import Client from '../client/Client';
-import { Bonus } from '../objects/Bomb';
 
 /**
  * Setup and display the main game state.
@@ -148,17 +148,6 @@ export default class Main extends Phaser.State {
 
     this.physics.arcade.enable(this.player);
 
-    const bonus = new Bonus({
-      game: this.game,
-      key: 'bonus-bomb',
-      x: 96+2*64, // this.game.world.centerX,
-      y: 96, // this.game.world.centerY,
-    });
-
-    this.physics.arcade.enable(bonus);
-
-    this.bonuses.push(bonus);
-
     this.players[player.id] = this.player;
 
     this.aKey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
@@ -234,9 +223,25 @@ export default class Main extends Phaser.State {
     }
     if (this.isTileRemovable(tileX, tileY)) {
       this.map.removeTile(tileX, tileY, this.bricksLayer).destroy();
+      this.generateBonus(tileX, tileY);
       return true;
     }
     return false;
+  }
+
+  generateBonus(tileX, tileY) {
+    if (Math.random() < 0.8) {
+      return;
+    }
+    const bonus = new BonusBomb({
+      game: this.game,
+      x: this.map.gridToPixelCoord(tileX),
+      y: this.map.gridToPixelCoord(tileY)
+    });
+
+    this.physics.arcade.enable(bonus);
+
+    this.bonuses.push(bonus);
   }
 
   /**
@@ -256,12 +261,12 @@ export default class Main extends Phaser.State {
    * @param x
    * @param y
    */
-  addBomb(x, y) {
-    this.showBomb({x, y});
+  addBomb(x, y, flameLength) {
+    this.showBomb({x, y, flameLength});
     Client.emitAddBomb(x, y);
   }
 
-  showBomb({x, y, playerId}) {
+  showBomb({x, y, playerId, flameLength}) {
     const bomb = new Bomb({
       game: this.game,
       map: this.map,
@@ -282,6 +287,7 @@ export default class Main extends Phaser.State {
         fire.body.setSize(50,50,7,7);
         this.explosions.push(fire);
       },
+      flameLength
     });
     this.game.physics.enable(bomb);
 
@@ -310,7 +316,7 @@ export default class Main extends Phaser.State {
     });
 
     if (this.aKey && this.aKey.isDown && !this.bombPlaced) {
-      this.addBomb(this.player.x, this.player.y);
+      this.addBomb(this.player.x, this.player.y, this.player.flameLength);
       this.bombPlaced = true;
     }
     if (this.aKey && this.aKey.isUp) {
