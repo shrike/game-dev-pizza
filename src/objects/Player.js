@@ -44,6 +44,7 @@ export default class Player extends Phaser.Sprite {
     this.current = Phaser.DOWN;
 
     this.flameLength = 1;
+    this.bombsAvailable = 1;
 
     Client.socket.on("position", (position) => {
       if (id === position.playerId) {

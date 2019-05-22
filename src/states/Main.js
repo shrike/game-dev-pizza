@@ -262,8 +262,9 @@ export default class Main extends Phaser.State {
    * @param y
    */
   addBomb(x, y, flameLength) {
-    this.showBomb({x, y, flameLength});
+    const bomb = this.showBomb({x, y, flameLength});
     Client.emitAddBomb(x, y);
+    return bomb;
   }
 
   showBomb({x, y, playerId, flameLength}) {
@@ -292,6 +293,7 @@ export default class Main extends Phaser.State {
     this.game.physics.enable(bomb);
 
     this.bombs.push(bomb);
+    return bomb;
   }
 
   calculateStartingPosition(playerId, playerPositions) {
@@ -315,8 +317,10 @@ export default class Main extends Phaser.State {
       this.physics.arcade.collide(this.players[k], this.bombs);
     });
 
-    if (this.aKey && this.aKey.isDown && !this.bombPlaced) {
-      this.addBomb(this.player.x, this.player.y, this.player.flameLength);
+    if (this.aKey && this.aKey.isDown && !this.bombPlaced && this.player.bombsAvailable > 0) {
+      const bomb = this.addBomb(this.player.x, this.player.y, this.player.flameLength);
+      this.player.bombsAvailable -= 1;
+      bomb.events.onDestroy.add(() => this.player.bombsAvailable += 1, this);
       this.bombPlaced = true;
     }
     if (this.aKey && this.aKey.isUp) {
