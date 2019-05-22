@@ -28,9 +28,9 @@ Client.sendJoin = function() {
   Client.socket.emit('join');
 };
 
-Client.startGame = function(mapName) {
-  console.log(`Emitting startGame "${mapName}"`);
-  Client.socket.emit('startGame', mapName);
+Client.startGame = function(map) {
+  console.log(`Emitting startGame "${map.name}"`);
+  Client.socket.emit('startGame', map);
 }
 
 export default Client;

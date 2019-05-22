@@ -112,10 +112,10 @@ function emitPlayers() {
   });
 }
 
-function startGame(mapName) {
+function startGame(map) {
 
-  log.info("Emitting 'gameStarted': ", mapName);
-  io.emit('gameStarted', mapName);
+  log.info("Emitting 'gameStarted': ", map.name);
+  io.emit('gameStarted', map);
 }
 
 function handleNewPlayer(socket) {
@@ -155,9 +155,9 @@ function handleNewPlayer(socket) {
     sendDied(socket, player);
   });
 
-  socket.on('startGame', (mapName) => {
-    log.info('Received startGame ' + mapName);
-    startGame(mapName);
+  socket.on('startGame', (map) => {
+    log.info('Received startGame ' + map.name);
+    startGame(map);
   });
 }
 

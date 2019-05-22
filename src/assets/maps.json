@@ -3,12 +3,24 @@
     {
       "name": "blue theme",
       "map": "assets/tiles_l3_alt.json",
-      "tiles": "assets/tiles_blue-theme.png"
+      "tiles": "assets/tiles_blue-theme.png",
+      "playerPositions": [
+        {"gridX":2, "gridY":1},
+        {"gridX":12, "gridY":9},
+        {"gridX":12, "gridY":1},
+        {"gridX":2, "gridY":9}
+      ]
     },
     {
       "name": "default",
       "map": "assets/tiles.json",
-      "tiles": "assets/map-sprite.png"
+      "tiles": "assets/map-sprite.png",
+      "playerPositions": [
+        {"gridX":1, "gridY":1},
+        {"gridX":13, "gridY":9},
+        {"gridX":13, "gridY":1},
+        {"gridX":1, "gridY":9}
+      ]
     }
   ]
 }

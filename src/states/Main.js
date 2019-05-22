@@ -21,6 +21,7 @@ export default class Main extends Phaser.State {
     this.playerDied = this.playerDied.bind(this);
     this.addPlayer = this.addPlayer.bind(this);
     this.showBomb = this.showBomb.bind(this);
+    this.calculateStartingPosition = this.calculateStartingPosition.bind(this);
     this.players = [];
     this.explosions = [];
     this.bombs = [];
@@ -42,8 +43,8 @@ export default class Main extends Phaser.State {
     // // Enable arcade physics.
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    this.map = this.add.tilemap(this.game.mapName);
-    this.map.addTilesetImage('tiles', this.game.mapName);
+    this.map = this.add.tilemap(this.game.map.name);
+    this.map.addTilesetImage('tiles', this.game.map.name);
 
     this.map.gridsize = 64;
     this.map.gridToPixelCoord = gridCoordinate => (gridCoordinate + 0.5) * 64;
@@ -79,13 +80,15 @@ export default class Main extends Phaser.State {
 
   initAllPlayers(players) {
       players.map((player) => {
+      const playerPosition = this.calculateStartingPosition(player.id, this.game.map.playerPositions);
+
       const newPlayer = new Player({
         game: this.game,
         key: 'player',
         map: this.map,
         isTileBrickFree: this.isTileBrickFree,
-        x:  96,
-        y:  96,
+        x: this.map.gridToPixelCoord(playerPosition.gridX),
+        y: this.map.gridToPixelCoord(playerPosition.gridY),
         cursors: null,
         id: player.id,
         isPlayerLocal: false,
@@ -109,13 +112,15 @@ export default class Main extends Phaser.State {
   }
 
   addPlayer(player) {
+    const playerPosition = this.calculateStartingPosition(player.id, this.game.map.playerPositions);
+
     const newPlayer = new Player({
       game: this.game,
       key: 'player',
       map: this.map,
       isTileBrickFree: this.isTileBrickFree,
-      x: 96, // this.game.world.centerX,
-      y: 96, // this.game.world.centerY,
+      x: this.map.gridToPixelCoord(playerPosition.gridX),
+      y: this.map.gridToPixelCoord(playerPosition.gridY),
       cursors: null,
       id: player.id,
       isPlayerLocal: false,
@@ -127,14 +132,15 @@ export default class Main extends Phaser.State {
   }
 
   initCurrentPlayer(player) {
+    const playerPosition = this.calculateStartingPosition(player.id, this.game.map.playerPositions);
 
     this.player = new Player({
       game: this.game,
       key: 'player',
       map: this.map,
       isTileBrickFree: this.isTileBrickFree,
-      x: 96, // this.game.world.centerX,
-      y: 96, // this.game.world.centerY,
+      x: this.map.gridToPixelCoord(playerPosition.gridX),
+      y: this.map.gridToPixelCoord(playerPosition.gridY),
       cursors: this.input.keyboard.createCursorKeys(),
       id: player.id,
       isPlayerLocal: true,
@@ -280,6 +286,10 @@ export default class Main extends Phaser.State {
     this.game.physics.enable(bomb);
 
     this.bombs.push(bomb);
+  }
+
+  calculateStartingPosition(playerId, playerPositions) {
+    return playerPositions[playerId % playerPositions.length];
   }
 
   /**

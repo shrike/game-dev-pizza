@@ -1,4 +1,5 @@
 import Client from '../client/Client';
+import Map from '../objects/Map';
 
 export default class MainMenu extends Phaser.State {
 
@@ -12,9 +13,9 @@ export default class MainMenu extends Phaser.State {
       this.game.players = players;
     });
 
-    Client.socket.on("gameStarted", (mapName) => {
-      console.log("Received 'gameStarted'", mapName);
-      this.game.mapName = mapName;
+    Client.socket.on("gameStarted", (map) => {
+      console.log("Received 'gameStarted'", map.name);
+      this.game.map = map;
       this.game.state.start('Main');
     });
   }
@@ -34,7 +35,12 @@ export default class MainMenu extends Phaser.State {
     const maps = this.game.cache.getJSON('maps');
     maps.maps.forEach((map) => {
       this.addMenuOption(map.name, () => {
-        Client.startGame(map.name);
+        const selectedMap = new Map({
+          name: map.name,
+          playerPositions: map.playerPositions,
+        });
+
+        Client.startGame(selectedMap);
       });
     });
 
