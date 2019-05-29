@@ -291,13 +291,14 @@ export default class Main extends Phaser.State {
    * @param x
    * @param y
    */
-  addBomb(x, y, flameLength) {
-    const bomb = this.showBomb({x, y, flameLength});
-    Client.emitAddBomb(x, y);
+  addBomb(x, y, playerId) {
+    const bomb = this.showBomb({x, y, playerId});
+    Client.emitAddBomb(x, y, playerId);
     return bomb;
   }
 
-  showBomb({x, y, playerId, flameLength}) {
+  showBomb({x, y, playerId}) {
+    const flameLength = this.players[playerId].flameLength;
     const bomb = new Bomb({
       game: this.game,
       map: this.map,
@@ -348,7 +349,7 @@ export default class Main extends Phaser.State {
     });
 
     if (this.aKey && this.aKey.isDown && !this.bombPlaced && this.player.bombsAvailable > 0) {
-      const bomb = this.addBomb(this.player.x, this.player.y, this.player.flameLength);
+      const bomb = this.addBomb(this.player.x, this.player.y, this.player.id);
       this.player.bombsAvailable -= 1;
       bomb.events.onDestroy.add(() => this.player.bombsAvailable += 1, this);
       this.bombPlaced = true;

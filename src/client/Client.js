@@ -15,8 +15,8 @@ Client.askNewPlayer = function() {
   Client.socket.emit('newplayer');
 };
 
-Client.emitAddBomb = function(x, y) {
-  Client.socket.emit('bomb', {x, y});
+Client.emitAddBomb = function(x, y, playerId) {
+  Client.socket.emit('bomb', {x, y, playerId});
 };
 
 Client.emitGameOver = function(id) {
