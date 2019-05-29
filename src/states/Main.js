@@ -22,6 +22,7 @@ export default class Main extends Phaser.State {
     this.addPlayer = this.addPlayer.bind(this);
     this.showBomb = this.showBomb.bind(this);
     this.calculateStartingPosition = this.calculateStartingPosition.bind(this);
+    this.setCollision = this.setCollision.bind(this);
     this.players = [];
     this.explosions = [];
     this.bombs = [];
@@ -63,8 +64,8 @@ export default class Main extends Phaser.State {
     this.stonesLayer = this.map.createLayer('stones');
     this.bricksLayer = this.map.createLayer('bricks');
 
-    this.map.setCollision(4, true, this.stonesLayer);
-    this.map.setCollision(3, true, this.bricksLayer);
+    this.setCollision(this.map.layers[this.map.getLayer('stones')].data, this.stonesLayer);
+    this.setCollision(this.map.layers[this.map.getLayer('bricks')].data, this.bricksLayer);
 
     this.initCurrentPlayer(this.game.players['me']);
 
@@ -76,6 +77,22 @@ export default class Main extends Phaser.State {
 
     // Setup listener for window resize.
     // window.addEventListener('resize', throttle(this.resize.bind(this), 50), false);
+  }
+
+  setCollision(tileGrid, layer) {
+    const collisionIndexes = new Set();
+    for (let y = 0; y < tileGrid.length; y++) {
+      for (let x = 0; x < tileGrid.length; x++) {
+        const tileIndex = tileGrid[x][y].index;
+        if (tileIndex >= 0) {
+          collisionIndexes.add(tileIndex);
+        }
+      }
+    }
+
+    collisionIndexes.forEach((index) => {
+      this.map.setCollision(index, true, layer);
+    });
   }
 
   initAllPlayers(players) {
