@@ -262,7 +262,7 @@ export default class Main extends Phaser.State {
     const bonus = new bonusTypes[randBonus]({
       game: this.game,
       x: this.map.gridToPixelCoord(tileX),
-      y: this.map.gridToPixelCoord(tileY)
+      y: this.map.gridToPixelCoord(tileY),
     });
 
     this.physics.arcade.enable(bonus);
