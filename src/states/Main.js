@@ -1,6 +1,6 @@
 // import throttle from 'lodash.throttle';
 import Player from '../objects/Player';
-import { BonusBomb } from '../objects/Bomb';
+import BonusBomb from '../objects/BonusBomb';
 import { Bomb } from '../objects/Bomb';
 import Client from '../client/Client';
 
