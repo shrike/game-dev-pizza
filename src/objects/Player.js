@@ -290,9 +290,12 @@ export default class Player extends Phaser.Sprite {
       this.sendPosition();
     }
   }
-  
-  takeBonus(bonus) {
-    bonus.destroy();
+
+  addAdditionalFlame() {
     this.flameLength += 1;
+  }
+
+  addAdditionalBomb() {
+    this.bombsAvailable += 1;
   }
 }

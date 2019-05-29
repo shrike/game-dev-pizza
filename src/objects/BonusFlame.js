@@ -1,18 +1,18 @@
 import Bonus from './Bonus';
 
-export default class BonusBomb extends Bonus {
+export default class BonusFlame extends Bonus {
   constructor({game, map, x, y}) {
     console.log(x);
     super({
       game: game,
       x: x,
       y: y,
-      key: 'bonus-bomb'
+      key: 'bonus-fire'
     });
   }
 
   addToPlayer(player) {
-    player.addAdditionalBomb();
+    player.addAdditionalFlame();
     this.destroy();
   }
 }

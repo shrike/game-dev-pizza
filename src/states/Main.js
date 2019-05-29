@@ -1,6 +1,7 @@
 // import throttle from 'lodash.throttle';
 import Player from '../objects/Player';
 import BonusBomb from '../objects/BonusBomb';
+import BonusFlame from '../objects/BonusFlame';
 import { Bomb } from '../objects/Bomb';
 import Client from '../client/Client';
 
@@ -250,7 +251,15 @@ export default class Main extends Phaser.State {
     if (Math.random() < 0.8) {
       return;
     }
-    const bonus = new BonusBomb({
+
+    const bonusTypes = [
+      BonusBomb,
+      BonusFlame,
+    ];
+
+    const randBonus = Math.floor(Math.random() * bonusTypes.length);
+
+    const bonus = new bonusTypes[randBonus]({
       game: this.game,
       x: this.map.gridToPixelCoord(tileX),
       y: this.map.gridToPixelCoord(tileY)
@@ -327,7 +336,7 @@ export default class Main extends Phaser.State {
           this.gameOver();
       });
       this.game.physics.arcade.overlap(this.player, this.bonuses, (player, bonus) => {
-        player.takeBonus(bonus);
+        bonus.addToPlayer(player);
       });
       this.physics.arcade.collide(this.players[k], this.stonesLayer);
       this.physics.arcade.collide(this.players[k], this.bricksLayer);

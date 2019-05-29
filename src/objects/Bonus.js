@@ -20,4 +20,8 @@ export default class Bonus extends Phaser.Sprite {
     this.game.add.existing(this);
     this.anchor.setTo(0.5);
   }
+
+  addToPlayer(player) {
+    this.destroy();
+  }
 }
