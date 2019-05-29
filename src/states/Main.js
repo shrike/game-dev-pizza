@@ -336,11 +336,12 @@ export default class Main extends Phaser.State {
    */
   update() {
 
+    this.game.physics.arcade.overlap(this.player, this.explosions, () => {
+      this.gameOver();
+    });
+
     Object.keys(this.players).forEach((k) => {
-      this.game.physics.arcade.overlap(this.player, this.explosions, () => {
-          this.gameOver();
-      });
-      this.game.physics.arcade.overlap(this.player, this.bonuses, (player, bonus) => {
+      this.game.physics.arcade.overlap(this.players[k], this.bonuses, (player, bonus) => {
         bonus.addToPlayer(player);
       });
       this.physics.arcade.collide(this.players[k], this.stonesLayer);
