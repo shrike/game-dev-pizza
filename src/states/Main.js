@@ -248,27 +248,31 @@ export default class Main extends Phaser.State {
   }
 
   generateBonus(tileX, tileY) {
-    if (Math.random() < 0.8) {
-      return;
+    // check if (tileX, tileY) is in the list of bonusTiles
+    for (let i = 0; i < this.game.map.bonusTiles.length; i++) {
+      const bonusTile = this.game.map.bonusTiles[i];
+      if (bonusTile.x === tileX && bonusTile.y === tileY){
+        this.addBonus(tileX, tileY, bonusTile.bonusType);
+        return;
+      }
     }
+  }
 
+  addBonus(tileX, tileY, bonusType) {
     const bonusTypes = [
       BonusBomb,
       BonusFlame,
     ];
 
-    const randBonus = Math.floor(Math.random() * bonusTypes.length);
-
-    const bonus = new bonusTypes[randBonus]({
+    const bonus = new bonusTypes[bonusType]({
       game: this.game,
       x: this.map.gridToPixelCoord(tileX),
       y: this.map.gridToPixelCoord(tileY),
     });
-
     this.physics.arcade.enable(bonus);
 
     this.bonuses.push(bonus);
-  }
+}
 
   /**
    * Resize the game to fit the window.

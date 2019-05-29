@@ -40,12 +40,45 @@ export default class MainMenu extends Phaser.State {
           playerPositions: map.playerPositions,
         });
 
+        const tilemap = this.add.tilemap(selectedMap.name);
+        selectedMap.bonusTiles = this.placeBonuses(tilemap);
         Client.startGame(selectedMap);
       });
     });
 
     this.addConnInfo();
   }
+
+  placeBonuses(tilemap) {
+    // find all non-empty tiles in the brick layer
+    const bricksLayer = tilemap.layers[tilemap.getLayer('bricks')];
+    const brickTiles = [];
+    for (let y = 0; y < bricksLayer.data.length; y++) {
+      for (let x = 0; x < bricksLayer.data[y].length; x++) {
+        if (bricksLayer.data[y][x].index >= 0) {
+          brickTiles.push({x, y});
+        }
+      }
+    }
+
+    // pick random tiles from the brick layer to place bonuses
+    const bonusTiles = [];
+    const numBonuses = Math.floor(0.2 * brickTiles.length)
+    for (let n = 0; n < numBonuses; n++) {
+
+      const randIndex = Math.floor(Math.random() * brickTiles.length);
+      bonusTiles.push(brickTiles[randIndex]);
+      brickTiles.splice(randIndex, 1);
+    }
+
+    // pick a random bonus type for each bonus picked
+    const NUM_BONUS_TYPES = 2;
+    for (let i = 0; i < bonusTiles.length; i++) {
+
+      bonusTiles[i].bonusType = Math.floor(Math.random() * NUM_BONUS_TYPES);
+    }
+    return bonusTiles;
+}
 
   create() {
     this.stateText.visible = true;
