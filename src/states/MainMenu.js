@@ -72,7 +72,7 @@ export default class MainMenu extends Phaser.State {
     }
 
     // pick a random bonus type for each bonus picked
-    const NUM_BONUS_TYPES = 2;
+    const NUM_BONUS_TYPES = 3;
     for (let i = 0; i < bonusTiles.length; i++) {
 
       bonusTiles[i].bonusType = Math.floor(Math.random() * NUM_BONUS_TYPES);

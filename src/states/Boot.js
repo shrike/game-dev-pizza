@@ -23,6 +23,7 @@ export default class Boot extends Phaser.State {
     // bonus images
     this.load.image('bonus-bomb', 'assets/bonus-bomb.png');
     this.load.image('bonus-fire', 'assets/bonus-fire.png');
+    this.load.image('bonus-speed', 'assets/bonus-speed.png');
 
     // TODO use map size instead of hardcoded 64
     this.load.spritesheet('explosion', 'assets/explosion-sprite.png', 64, 64);

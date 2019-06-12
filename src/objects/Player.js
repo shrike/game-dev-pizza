@@ -33,7 +33,8 @@ export default class Player extends Phaser.Sprite {
 
     this.cursors = cursors;
 
-    this.speed = 150;
+    this.initialSpeed = 150;
+    this.speed = this.initialSpeed;
     this.animRate = 30;
     this.turned = false;
     this.turning = false;
@@ -297,5 +298,9 @@ export default class Player extends Phaser.Sprite {
 
   addAdditionalBomb() {
     this.bombsAvailable += 1;
+  }
+
+  increaseSpeed() {
+    this.speed += 0.5 * this.initialSpeed;
   }
 }

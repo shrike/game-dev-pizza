@@ -2,6 +2,7 @@
 import Player from '../objects/Player';
 import BonusBomb from '../objects/BonusBomb';
 import BonusFlame from '../objects/BonusFlame';
+import BonusSpeed from '../objects/BonusSpeed';
 import { Bomb } from '../objects/Bomb';
 import Client from '../client/Client';
 
@@ -262,6 +263,7 @@ export default class Main extends Phaser.State {
     const bonusTypes = [
       BonusBomb,
       BonusFlame,
+      BonusSpeed,
     ];
 
     const bonus = new bonusTypes[bonusType]({
