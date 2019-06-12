@@ -5,6 +5,7 @@ import BonusFlame from '../objects/BonusFlame';
 import BonusSpeed from '../objects/BonusSpeed';
 import { Bomb } from '../objects/Bomb';
 import Client from '../client/Client';
+import players from '../generated/Players'
 
 /**
  * Setup and display the main game state.
@@ -103,7 +104,7 @@ export default class Main extends Phaser.State {
 
       const newPlayer = new Player({
         game: this.game,
-        key: 'player',
+        key: this.buildPlayerSpriteName(player.id),
         map: this.map,
         isTileBrickFree: this.isTileBrickFree,
         x: this.map.gridToPixelCoord(playerPosition.gridX),
@@ -127,7 +128,6 @@ export default class Main extends Phaser.State {
       }
       return false;
     });
-
   }
 
   addPlayer(player) {
@@ -135,7 +135,7 @@ export default class Main extends Phaser.State {
 
     const newPlayer = new Player({
       game: this.game,
-      key: 'player',
+      key: this.buildPlayerSpriteName(player.id),
       map: this.map,
       isTileBrickFree: this.isTileBrickFree,
       x: this.map.gridToPixelCoord(playerPosition.gridX),
@@ -150,12 +150,17 @@ export default class Main extends Phaser.State {
     this.players[player.id] = newPlayer;
   }
 
+  buildPlayerSpriteName(pid) {
+    const color = players.players[0].colors[pid % players.players[0].colors.length];
+    return `player-${players.players[0].name}-${color}`;
+  }
+
   initCurrentPlayer(player) {
     const playerPosition = this.calculateStartingPosition(player.id, this.game.map.playerPositions);
 
     this.player = new Player({
       game: this.game,
-      key: 'player',
+      key: this.buildPlayerSpriteName(player.id),
       map: this.map,
       isTileBrickFree: this.isTileBrickFree,
       x: this.map.gridToPixelCoord(playerPosition.gridX),

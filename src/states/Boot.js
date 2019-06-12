@@ -1,6 +1,4 @@
-// import Player from '../objects/Player';
-
-
+import players from '../generated/Players';
 
 /**
  * Setup the pre-game boot sequence.
@@ -17,7 +15,12 @@ export default class Boot extends Phaser.State {
 
     this.load.json('maps', 'assets/maps.json');
 
-    this.load.spritesheet('player', 'assets/char-sprite.png', 64, 64);
+    players.players.forEach(player => {
+      player.colors.forEach(color => {
+        this.load.spritesheet(`player-${player.name}-${color}`, `assets/${player.name}-${color}.png`, 64, 64);
+      })
+    });
+
     this.load.image('bomb', 'assets/bomb.png');
 
     // bonus images

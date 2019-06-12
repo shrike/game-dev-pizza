@@ -15,6 +15,53 @@ const pixi = path.join(phaserModule, 'pixi.js');
 // Determine if this is a production build or not.
 const isProd = process.env.NODE_ENV === 'production';
 
+const distAssets = path.resolve(__dirname, '../dist/assets')
+const resPath = path.resolve(__dirname, '../resources');
+const spritesPath = path.resolve(resPath, 'sprites');
+const generatedSrcPath = path.resolve(__dirname, '../src/generated');
+
+const playerSpritesPath = path.resolve(spritesPath, 'players');
+
+const playerSpriteColors = fs.readdirSync(playerSpritesPath)
+  .map(playerName =>
+    fs.readdirSync(path.resolve(playerSpritesPath, playerName))
+      .map(color =>
+        new SpritesmithPlugin({
+          src: {
+            cwd: path.resolve(playerSpritesPath, playerName, color),
+            glob: '*.png',
+          },
+          target: {
+            image: path.resolve(distAssets, `${playerName}-${color}.png`),
+            css: path.resolve(__dirname, '../src/spritesmith-generated/sprite.styl'),
+          },
+          spritesmithOptions: {
+            algorithm: 'top-down',
+            algorithmOpts: {sort: false},
+          },
+        }))
+  );
+
+// flatten magic
+const playerSprites = [].concat.apply([], playerSpriteColors);
+
+// generate Players.json
+const players = {
+  players: fs.readdirSync(playerSpritesPath)
+    .map(playerName => {
+      return {
+        name: playerName,
+        colors: fs.readdirSync(path.resolve(playerSpritesPath, playerName))
+      }
+    })
+}
+// This is executed only once? We wont regenerate the json if we add new sprites after npm run dev
+if (!fs.existsSync(generatedSrcPath)) {
+  fs.mkdirSync(generatedSrcPath);
+}
+const playersFileContents = `export default ${JSON.stringify(players)}`;
+fs.writeFileSync(path.resolve(generatedSrcPath, "Players.js"), playersFileContents);
+
 // Define the Webpack config.
 const config = {
   devtool: isProd ? false : '#source-map',
@@ -104,16 +151,16 @@ const config = {
     new HTMLPlugin({
       template: './src/index.template.html',
     }),
-    ...fs.readdirSync(path.resolve(__dirname, '../src/assets/sprites'))
+    ...fs.readdirSync(spritesPath)
       .filter(filename => filename.endsWith('-sprite'))
       .map(filename =>
         new SpritesmithPlugin({
           src: {
-            cwd: path.resolve(__dirname, '../src/assets/sprites/', filename ),
+            cwd: path.resolve(spritesPath, filename ),
             glob: '*.png',
           },
           target: {
-            image: path.resolve(__dirname, '../src/assets/sprites/', `${filename}.png`),
+            image: path.resolve(distAssets, `${filename}.png`),
             css: path.resolve(__dirname, '../src/spritesmith-generated/sprite.styl'),
           },
           spritesmithOptions: {
@@ -122,6 +169,7 @@ const config = {
           },
         })
       ),
+    ...playerSprites,
   ],
 };
 
