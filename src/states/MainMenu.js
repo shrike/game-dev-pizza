@@ -10,7 +10,6 @@ export default class MainMenu extends MenuBase {
 
       console.log('Updating players... ', players);
       this.txt.text = `Players: ${Object.keys(players).length}`
-      this.game.players = {'me': players['me']}
     });
 
     Client.socket.on("roomCreated", (room) => {
