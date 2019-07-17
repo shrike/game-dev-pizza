@@ -16,10 +16,6 @@ The purpose of this repo is to be a starting point for creating a game. The idea
 
 ## Usage
 
-Clone the git repo.
-
-`git@github.com:goldfire/phaser-boilerplate.git`
-
 Install the dependencies.
 
 `npm i`
@@ -30,6 +26,12 @@ Start the development web server.
 
 Access your project in the browser.
 
-`locahost:7777`
+`localhost:7777`
+
+Open a new terminal and run.
+
+`node server.js`
+
+Change your port to `localhost:8081`.
 
 Then start building your game!
