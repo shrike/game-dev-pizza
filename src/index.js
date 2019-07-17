@@ -5,6 +5,7 @@ import Preload from './states/Preload';
 import Main from './states/Main';
 import GameOver from './states/GameOver';
 import MainMenu from './states/MainMenu';
+import Room from './states/Room';
 import './assets/css/index.css';
 
 /**
@@ -34,6 +35,7 @@ class Game extends Phaser.Game {
     this.state.add('Main', Main, false);
     this.state.add('GameOver', GameOver, false);
     this.state.add('MainMenu', MainMenu, false);
+    this.state.add('Room', Room, false);
 
     // Kick things off with the boot state.
     this.state.start('Boot');

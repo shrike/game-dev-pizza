@@ -32,9 +32,6 @@ export default class Main extends Phaser.State {
     this.bonuses = [];
     this.bombPlaced = false;
     this.aKey = null;
-    Client.socket.on("myPlayer", this.initCurrentPlayer);
-
-    Client.socket.on("allplayers", this.initAllPlayers);
 
     Client.socket.on("bomb", this.showBomb);
     Client.socket.on("playerDied", this.playerDied);
@@ -75,7 +72,6 @@ export default class Main extends Phaser.State {
     const otherPlayers = Object.keys(this.game.players)
       .filter((key) => key != 'me')
       .map((key) => this.game.players[key]);
-
     this.initAllPlayers(otherPlayers);
 
     // Setup listener for window resize.
