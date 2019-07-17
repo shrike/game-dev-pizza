@@ -5,24 +5,14 @@ import Client from '../client/Client';
  * Setup and control base player.
  */
 export default class Player extends Phaser.Sprite {
-  /**
-   *
-   * @param game
-   * @param map
-   * @param isTileBrickFree
-   * @param x
-   * @param y
-   * @param key
-   * @param frame
-   * @param cursors
-   */
+
   constructor({game, map, isTileBrickFree, x, y, key, frame, cursors, id, isPlayerLocal}) {
     super(game, x, y, key, frame);
 
     this.map = map;
     this.isTileBrickFree = isTileBrickFree;
     this.id = id;
-    this.isPlayerLocal = isPlayerLocal
+    this.isPlayerLocal = isPlayerLocal;
 
     // Add the sprite to the game.
     this.game.add.existing(this);
@@ -82,16 +72,12 @@ export default class Player extends Phaser.Sprite {
 
       anim.enableUpdate = true;
       anim.onUpdate.add(this.update, this);
-    })
+    });
 
     this.lastPosition = {};
     this.stopSent = false;
   }
 
-  /**
-   *
-   * @param direction
-   */
   canTurn(direction) {
     const left = this.map.getTileWorldXY(this.left - 1, this.centerY);
     const right = this.map.getTileWorldXY(this.right + 1, this.centerY);
@@ -111,17 +97,9 @@ export default class Player extends Phaser.Sprite {
     return false;
   }
 
-  /**
-   *
-   * @param direction
-   */
   turn(direction) {
-    if (this.turning || !this.canTurn(direction)) {
-      return false;
-    }
-
-    if (direction === this.current) {
-      return false;
+    if (this.turning || !this.canTurn(direction) || direction === this.current) {
+      return;
     }
 
     if (this.current !== this.opposites[direction]) {
@@ -135,8 +113,6 @@ export default class Player extends Phaser.Sprite {
     this.current = direction;
 
     this.animate();
-
-    return true;
   }
 
   animate() {
@@ -151,24 +127,17 @@ export default class Player extends Phaser.Sprite {
     }
   }
 
-  /**
-   *
-   */
   move() {
 
     // if button pressed in new direction - check if we can turn
-    if (this.pressedButtons[Phaser.LEFT] && this.current !== Phaser.LEFT && !this.turned &&
-      this.turn(Phaser.LEFT)) {
-      ;
-    } else if (this.pressedButtons[Phaser.RIGHT] && this.current !== Phaser.RIGHT && !this.turned &&
-      this.turn(Phaser.RIGHT)) {
-      ;
-    } else if (this.pressedButtons[Phaser.UP] && this.current !== Phaser.UP && !this.turned &&
-      this.turn(Phaser.UP)) {
-      ;
-    } else if (this.pressedButtons[Phaser.DOWN] && this.current !== Phaser.DOWN && !this.turned &&
-      this.turn(Phaser.DOWN)) {
-      ;
+    if (this.turnAvailable(Phaser.LEFT)) {
+      this.turn(Phaser.LEFT);
+    } else if (this.turnAvailable(Phaser.RIGHT)) {
+      this.turn(Phaser.RIGHT);
+    } else if (this.turnAvailable(Phaser.UP)) {
+      this.turn(Phaser.UP);
+    } else if (this.turnAvailable(Phaser.DOWN)) {
+      this.turn(Phaser.DOWN);
     } else if (!this.pressedButtons[this.current]) {
       // else if button is pressed in current direction - continue, else stop
       this.stop();
@@ -187,6 +156,10 @@ export default class Player extends Phaser.Sprite {
       this.animate();
     }
 
+    this.changeVelocity();
+  }
+
+  changeVelocity() {
     if (this.current === Phaser.LEFT) {
       this.body.velocity.x = -this.speed;
       this.body.velocity.y = 0;
@@ -199,14 +172,16 @@ export default class Player extends Phaser.Sprite {
     } else if (this.current === Phaser.DOWN) {
       this.body.velocity.x = 0;
       this.body.velocity.y = this.speed;
-    } else {
-      // invalid ?
     }
   }
 
-  /**
-   *
-   */
+  turnAvailable(direction) {
+    if (this.pressedButtons[direction] && this.current !== direction && !this.turned) {
+      return true;
+    }
+    return false;
+  }
+
   stop() {
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
@@ -224,11 +199,6 @@ export default class Player extends Phaser.Sprite {
     }
   }
 
-  /**
-   *
-   * @param to
-   * @returns {int}
-   */
   getAngle(to) {
     //  About-face?
     if (this.current === this.opposites[to]) {
@@ -244,16 +214,10 @@ export default class Player extends Phaser.Sprite {
     return 90;
   }
 
-  /**
-   *
-   */
   calcGridPosition() {
     this.marker = this.map.pixelToGrid(this);
   }
 
-  /**
-   *
-   */
   checkButtons() {
     if (this.cursors.down.justDown ||
       this.cursors.up.justDown ||
@@ -277,9 +241,6 @@ export default class Player extends Phaser.Sprite {
     }
   }
 
-  /**
-   *
-   */
   update() {
     // Only the local player can be controlled via the keyboard
     if (this.isPlayerLocal) {
