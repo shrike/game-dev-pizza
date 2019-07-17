@@ -117,7 +117,7 @@ const config = {
         use: ['expose-loader?Phaser'],
       },
       {
-        test: /\.(png|jpg|gif|svg|pvr|pkm|json)$/,
+        test: /\.(png|jpg|gif|svg|pvr|pkm|json|wav)$/,
         use: ['file-loader?name=assets/[name].[ext]?[hash]'],
       },
       {

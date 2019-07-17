@@ -1,5 +1,6 @@
 import Client from '../client/Client';
-import MenuBase from './MenuBase'
+import MenuBase from './MenuBase';
+import BackgroundMusicButton from '../objects/BackgroundMusicButton';
 
 export default class MainMenu extends MenuBase {
 
@@ -40,6 +41,12 @@ export default class MainMenu extends MenuBase {
     this.addConnInfo();
 
     this.addCreateRoomBtn();
+
+    new BackgroundMusicButton({
+      x: this.game.world.width - 42,
+      y: 10,
+      game: this.game
+    });
   }
 
   addCreateRoomBtn() {

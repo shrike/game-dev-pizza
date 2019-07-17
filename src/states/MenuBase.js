@@ -1,4 +1,3 @@
-
 export default class MenuBase extends Phaser.State {
   
   constructor() {
@@ -24,7 +23,7 @@ export default class MenuBase extends Phaser.State {
 
     this.optionCount = 1;
   }
-  
+
   addMenuOption(text, callback) {
     const optionStyle = this.style();
     optionStyle.font = '30px 8BitCrash';

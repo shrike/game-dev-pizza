@@ -6,6 +6,7 @@ import BonusSpeed from '../objects/BonusSpeed';
 import { Bomb } from '../objects/Bomb';
 import Client from '../client/Client';
 import players from '../generated/Players'
+import BackgroundMusicButton from '../objects/BackgroundMusicButton';
 
 /**
  * Setup and display the main game state.
@@ -36,6 +37,14 @@ export default class Main extends Phaser.State {
     Client.socket.on("bomb", this.showBomb);
     Client.socket.on("playerDied", this.playerDied);
    }
+
+   preload() {
+     new BackgroundMusicButton({
+       x: this.game.world.width - 42,
+       y: 10,
+       game: this.game
+     });
+  }
 
   /**
    * Setup all objects, etc needed for the main game state.

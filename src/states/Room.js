@@ -1,6 +1,7 @@
 import Client from '../client/Client';
 import Map from '../objects/Map';
-import MenuBase from './MenuBase'
+import MenuBase from './MenuBase';
+import BackgroundMusicButton from '../objects/BackgroundMusicButton';
 
 export default class Room extends MenuBase {
   
@@ -33,8 +34,14 @@ export default class Room extends MenuBase {
     });
     
     this.addConnInfo();
+
+    new BackgroundMusicButton({
+      x: this.game.world.width - 42,
+      y: 10,
+      game: this.game
+    });
   }
-    
+
   placeBonuses(tilemap) {
     // find all non-empty tiles in the brick layer
     const bricksLayer = tilemap.layers[tilemap.getLayer('bricks')];

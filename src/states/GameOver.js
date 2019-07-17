@@ -1,3 +1,5 @@
+import BackgroundMusicButton from '../objects/BackgroundMusicButton';
+
 /**
  * Setup the game over state.
  */
@@ -18,6 +20,12 @@ export default class GameOver extends Phaser.State {
       // HACK FIX: if we restart the game here, we end up with a new player for the same browser window
       // this.game.state.start('MainMenu');
     };
+
+    new BackgroundMusicButton({
+      x: this.game.world.width - 42,
+      y: 10,
+      game: this.game
+    });
   }
 
   create() {
