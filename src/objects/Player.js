@@ -129,18 +129,13 @@ export default class Player extends Phaser.Sprite {
 
   move() {
 
-    // if button pressed in new direction - check if we can turn
-    if (this.turnAvailable(Phaser.LEFT)) {
-      this.turn(Phaser.LEFT);
-    } else if (this.turnAvailable(Phaser.RIGHT)) {
-      this.turn(Phaser.RIGHT);
-    } else if (this.turnAvailable(Phaser.UP)) {
-      this.turn(Phaser.UP);
-    } else if (this.turnAvailable(Phaser.DOWN)) {
-      this.turn(Phaser.DOWN);
-    } else if (!this.pressedButtons[this.current]) {
-      // else if button is pressed in current direction - continue, else stop
-      this.stop();
+    var lastPressedDirection = this.buttonsQueue[this.buttonsQueue.length - 1];
+
+    if (this.turnAvailable(lastPressedDirection)) {
+      this.turn(lastPressedDirection);
+    } else if (!this.pressedButtons[this.current]) { // else if button is pressed in current direction - continue, else stop
+	this.stop();
+	this.buttonsQueue.pop(lastPressedDirection);
       if (!this.stopSent) {
         Client.sendPosition(this.position);
         this.stopSent = true;
@@ -219,10 +214,19 @@ export default class Player extends Phaser.Sprite {
   }
 
   checkButtons() {
-    if (this.cursors.down.justDown ||
-      this.cursors.up.justDown ||
-      this.cursors.left.justDown ||
-      this.cursors.right.justDown) {
+    if (this.cursors.down.justDown) {
+      this.buttonsQueue.push(Phaser.DOWN);
+    }
+    if (this.cursors.up.justDown) {
+      this.buttonsQueue.push(Phaser.UP);
+    }
+    if (this.cursors.left.justDown) {
+      this.buttonsQueue.push(Phaser.LEFT);
+    }
+    if (this.cursors.right.justDown) {
+      this.buttonsQueue.push(Phaser.RIGHT);
+    }
+    if (this.buttonsQueue.lenght > 0) {
       this.turned = false;
     }
     this.pressedButtons[Phaser.LEFT] = this.cursors.left.isDown;
