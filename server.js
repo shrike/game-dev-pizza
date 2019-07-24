@@ -66,7 +66,7 @@ function sendPlayerDisconnected(socket) {
 function sendPosition(socket, position) {
 
   //FIXME: this is Sir Spam-A-Lot
-  log.info("Emitting 'position': ", position);
+  log.debug("Emitting 'position': ", position);
   socket.broadcast.emit('position', position);
 }
 
