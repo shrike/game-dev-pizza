@@ -107,27 +107,39 @@ function createRoom(socket) {
   server.lastRoomId += 1;
   const room = {
     id: server.lastRoomId,
-    players: []
+    players: { [socket.player.id]: socket.player }
   };
   server.rooms[room.id] = room;
   socket.roomId = room.id;
   socket.join(room.id);
-  emitRoomJoined(socket, room.id, socket.player.id);
+  emitRoomJoined(socket, room);
   // TODO: emit roomCreated for all others
 }
 
 function emitRooms(socket) {
   log.info("Emitting 'rooms'");
   Object.values(server.rooms).forEach((room) => {
-    socket.emit('roomCreated', room);
+    if (Object.keys(room.players).length > 0){
+      socket.emit('roomCreated', room);
+    }
   });
 }
 
-function emitRoomJoined(socket, roomId, playerId) {
-  log.info("Emitting 'roomJoined'", roomId, playerId);
+function emitRoomJoined(socket, room) {
+  log.info("Emitting 'roomJoined'", room);
+  // Replace the key 'id' of the current player with 'me'
+  const players = Object.keys(room.players).reduce(function(result, key) {
+    if (key == socket.player.id) {
+        result['me'] = room.players[key];
+    } else {
+        result[key] =  room.players[key];
+    }
+    return result
+  }, {});
+
   socket.emit('roomJoined', {
-    room: server.rooms[roomId],
-    players: getAllPlayersInRoom(roomId, playerId)
+    room: room, 
+    players: players
   });
 }
 
@@ -150,6 +162,10 @@ function handleNewPlayer(socket) {
   emitRooms(socket);
 
   socket.on('disconnect', () => {
+    const room = server.rooms[socket.roomId];
+    if (room) {
+      delete room.players[socket.player.id];
+    }
     sendPlayerDisconnected(socket);
   });
 
@@ -179,16 +195,18 @@ function handleNewPlayer(socket) {
     createRoom(socket);
   });
 
-  socket.on('joinRoom', (room) => {
-    log.info('Received joinRoom', room);
-    socket.join(room.id);
-    socket.roomId = room.id;
+  socket.on('joinRoom', (msg) => {
+    const roomId = msg.id;
+    log.info('Received joinRoom', msg);
+    socket.join(roomId);
+    socket.roomId = roomId;
+    server.rooms[roomId].players[socket.player.id] = socket.player;
 
     //TODO - move these to functions?
     // 1. Tell everyone else we joined
-    io.in(room.id).emit('playerJoined', socket.player);
+    io.in(roomId).emit('playerJoined', socket.player);
     // 2. Tell our current client it has successfully joined a room
-    emitRoomJoined(socket, room.id, socket.player.id);
+    emitRoomJoined(socket, server.rooms[roomId]);
   });
 }
 
