@@ -26,6 +26,10 @@ export default class MainMenu extends MenuBase {
       this.game.players = msg.players;
       this.game.state.start('Room');
     });
+
+    Client.socket.on("playerDisconnected", (playerId) => {
+      delete this.game.players[playerId];
+    });
   }
 
   preload() {

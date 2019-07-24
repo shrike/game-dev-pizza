@@ -59,8 +59,8 @@ function getAllPlayersInRoom(roomId, currPlayerId) {
 
 function sendPlayerDisconnected(socket) {
 
-  log.info("Emitting 'remove': ", socket.player.id);
-  io.emit('remove', socket.player.id);
+  log.info("Emitting 'playerDisconnected': ", socket.player.id);
+  io.emit('playerDisconnected', socket.player.id);
 }
 
 function sendPosition(socket, position) {
