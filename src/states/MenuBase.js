@@ -33,5 +33,6 @@ export default class MenuBase extends Phaser.State {
     txt.events.onInputOver.add(this.onOverStyle);
     txt.events.onInputOut.add(this.onOutStyle);
     this.optionCount += 1;
+    return txt;
   }
 }

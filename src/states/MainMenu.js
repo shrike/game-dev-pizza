@@ -7,17 +7,29 @@ export default class MainMenu extends MenuBase {
   constructor() {
     super();
 
+    this.rooms = [];
+
     Client.socket.on("players", (players) => {
 
       console.log('Updating players... ', players);
       this.txt.text = `Players: ${Object.keys(players).length}`
     });
 
+    Client.socket.on("rooms", (rooms) => {
+      console.log("Received 'rooms'", rooms);
+      this.rooms.forEach(room => {
+        this.game.world.remove(room);
+      });
+      if (rooms) {
+        rooms.forEach(room => {
+          this.addRoomBtn(room);
+        });
+      }
+    });
+
     Client.socket.on("roomCreated", (room) => {
       console.log("Received 'roomCreated'", room);
-      this.addMenuOption('ROOM ' + room.id, () => {
-        Client.sendJoinRoom(room.id);
-      });
+      this.addRoomBtn(room);
     });
 
     Client.socket.on("roomJoined", (msg) => {
@@ -28,7 +40,9 @@ export default class MainMenu extends MenuBase {
     });
 
     Client.socket.on("playerDisconnected", (playerId) => {
-      delete this.game.players[playerId];
+      if (this.game.players) {
+        delete this.game.players[playerId];
+      }
     });
   }
 
@@ -73,5 +87,11 @@ export default class MainMenu extends MenuBase {
     const text = "Players: ";
     this.txt = this.game.add.text(
       this.game.world.width-200, this.game.world.height-100, text, this.style());
+  }
+
+  addRoomBtn(room) {
+    this.rooms.push(this.addMenuOption('ROOM ' + room.id, () => {
+      Client.sendJoinRoom(room.id);
+    }));
   }
 }

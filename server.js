@@ -113,16 +113,26 @@ function createRoom(socket) {
   socket.roomId = room.id;
   socket.join(room.id);
   emitRoomJoined(socket, room);
-  // TODO: emit roomCreated for all others
+  socket.broadcast.emit('roomCreated', room);
+}
+
+function getNonEmptyRooms() {
+  const rooms = [];
+  Object.values(server.rooms).forEach((room) => {
+    if (Object.keys(room.players).length > 0){
+      rooms.push(room);
+    }
+  });
 }
 
 function emitRooms(socket) {
   log.info("Emitting 'rooms'");
-  Object.values(server.rooms).forEach((room) => {
-    if (Object.keys(room.players).length > 0){
-      socket.emit('roomCreated', room);
-    }
-  });
+  socket.emit('rooms', getNonEmptyRooms());
+}
+
+function broadcastRooms(socket) {
+  log.info("Broadcasting 'rooms'");
+  socket.broadcast.emit('rooms', getNonEmptyRooms());
 }
 
 function emitRoomJoined(socket, room) {
@@ -167,6 +177,7 @@ function handleNewPlayer(socket) {
       delete room.players[socket.player.id];
     }
     sendPlayerDisconnected(socket);
+    broadcastRooms(socket);
   });
 
   socket.on('position', (position) => {
