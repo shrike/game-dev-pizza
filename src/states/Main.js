@@ -36,6 +36,7 @@ export default class Main extends Phaser.State {
 
     Client.socket.on("bomb", this.showBomb);
     Client.socket.on("playerDied", this.playerDied);
+    Client.socket.on("playerDisconnected", this.playerDied);
    }
 
    preload() {
@@ -125,7 +126,7 @@ export default class Main extends Phaser.State {
     });
   }
 
-  playerDied({id}) {
+  playerDied(id) {
     this.players.some((p) => {
       if (p.id === id) {
         p.destroy();
@@ -373,7 +374,7 @@ export default class Main extends Phaser.State {
   }
 
   gameOver() {
-    Client.emitGameOver(this.player.id);
+    Client.emitGameOver();
     this.game.state.start('GameOver');
   }
 }
