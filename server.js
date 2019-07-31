@@ -123,6 +123,7 @@ function getNonEmptyRooms() {
       rooms.push(room);
     }
   });
+  return rooms;
 }
 
 function emitRooms(socket) {
