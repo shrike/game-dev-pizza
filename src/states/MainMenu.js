@@ -90,8 +90,10 @@ export default class MainMenu extends MenuBase {
   }
 
   addRoomBtn(room) {
-    this.rooms.push(this.addMenuOption('ROOM ' + room.id, () => {
-      Client.sendJoinRoom(room.id);
-    }));
+    if (this.state.current === this.constructor.name) {
+      this.rooms.push(this.addMenuOption('ROOM ' + room.id, () => {
+        Client.sendJoinRoom(room.id);
+      }));
+    }
   }
 }
