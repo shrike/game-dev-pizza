@@ -37,7 +37,7 @@ export default class Main extends Phaser.State {
     Client.socket.on("bomb", this.showBomb);
     Client.socket.on("playerDied", this.playerDied);
     Client.socket.on("playerDisconnected", this.playerDied);
-   }
+  }
 
    preload() {
      new BackgroundMusicButton({
@@ -323,6 +323,7 @@ export default class Main extends Phaser.State {
       removeTile: this.removeTile,
       onExplode: (exploded) => {
         this.bombs = this.bombs.filter((aBomb) => {
+	  this.playBombExplosionSound();
           return aBomb.id !== exploded.id;
         });
       },
@@ -340,6 +341,11 @@ export default class Main extends Phaser.State {
     return bomb;
   }
 
+  playBombExplosionSound() {
+    this.bombSounds = [this.game.audio.buh, this.game.audio.dzh];
+    this.bombSounds[Math.floor(Math.random() * this.bombSounds.length)].play();
+  }
+
   calculateStartingPosition(playerId, playerPositions) {
     return playerPositions[playerId % playerPositions.length];
   }
@@ -355,6 +361,7 @@ export default class Main extends Phaser.State {
 
     Object.keys(this.players).forEach((k) => {
       this.game.physics.arcade.overlap(this.players[k], this.bonuses, (player, bonus) => {
+	this.game.audio.stanami.play();
         bonus.addToPlayer(player);
       });
       this.physics.arcade.collide(this.players[k], this.stonesLayer);
@@ -374,6 +381,7 @@ export default class Main extends Phaser.State {
   }
 
   gameOver() {
+    this.game.audio.stanamilo6i4ko.play();
     Client.emitGameOver();
     this.game.state.start('GameOver');
   }

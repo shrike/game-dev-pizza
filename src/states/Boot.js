@@ -36,7 +36,22 @@ export default class Boot extends Phaser.State {
     // loading audio with Phaser does not work for some reason
     this.game.audio = {};
     this.game.audio.background = new Audio('assets/background.wav');
+    this.game.audio.nie = new Audio('assets/nienienienie.wav');
+    this.game.audio.buh = new Audio('assets/buhhhhhhh.wav');
+    this.game.audio.dzh = new Audio('assets/dzhhhh.wav');
+    this.game.audio.nimogapove4e = new Audio('assets/nimogapove4e.wav');
+    this.game.audio.sekname = new Audio('assets/sekname.wav');
+    this.game.audio.stanami = new Audio('assets/stanami.wav');
+    this.game.audio.stanamilo6i4ko = new Audio('assets/stanamilo6i4ko.wav');
+
     this.game.audio.background.loop = true;
+    this.game.audio.nie.loop = false;
+    this.game.audio.buh.loop = false;
+    this.game.audio.dzh.loop = false;
+    this.game.audio.nimogapove4e.loop = false;
+    this.game.audio.sekname.loop = false;
+    this.game.audio.stanami.loop = false;
+    this.game.audio.stanamilo6i4ko.loop = false;
 
     // Play here, so that the buttons can set the correct image
     this.game.audio.background.play();

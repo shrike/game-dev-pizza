@@ -98,7 +98,9 @@ export default class Player extends Phaser.Sprite {
   }
 
   turn(direction) {
+
     if (this.turning || !this.canTurn(direction) || direction === this.current) {
+      this.game.audio.nimogapove4e.play();
       return;
     }
 
@@ -134,8 +136,8 @@ export default class Player extends Phaser.Sprite {
     if (this.turnAvailable(lastPressedDirection)) {
       this.turn(lastPressedDirection);
     } else if (!this.pressedButtons[this.current]) { // else if button is pressed in current direction - continue, else stop
-	this.stop();
-	this.buttonsQueue.pop(lastPressedDirection);
+      this.stop();
+      this.buttonsQueue.pop(lastPressedDirection);
       if (!this.stopSent) {
         Client.sendPosition(this.position);
         this.stopSent = true;
