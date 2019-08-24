@@ -5,7 +5,8 @@ import BonusFlame from '../objects/BonusFlame';
 import BonusSpeed from '../objects/BonusSpeed';
 import { Bomb } from '../objects/Bomb';
 import Client from '../client/Client';
-import players from '../generated/Players'
+import players from '../generated/Players';
+import Sound from '../objects/Sound';
 import BackgroundMusicButton from '../objects/BackgroundMusicButton';
 
 /**
@@ -27,6 +28,7 @@ export default class Main extends Phaser.State {
     this.showBomb = this.showBomb.bind(this);
     this.calculateStartingPosition = this.calculateStartingPosition.bind(this);
     this.setCollision = this.setCollision.bind(this);
+    this.sound = null;
     this.players = [];
     this.explosions = [];
     this.bombs = [];
@@ -83,6 +85,8 @@ export default class Main extends Phaser.State {
       .filter((key) => key != 'me')
       .map((key) => this.game.players[key]);
     this.initAllPlayers(otherPlayers);
+
+    this.sound = new Sound({game: this.game});
 
     // Setup listener for window resize.
     // window.addEventListener('resize', throttle(this.resize.bind(this), 50), false);
@@ -323,7 +327,7 @@ export default class Main extends Phaser.State {
       removeTile: this.removeTile,
       onExplode: (exploded) => {
         this.bombs = this.bombs.filter((aBomb) => {
-	  this.playBombExplosionSound();
+	  this.sound.playBombExplds();
           return aBomb.id !== exploded.id;
         });
       },
@@ -341,11 +345,6 @@ export default class Main extends Phaser.State {
     return bomb;
   }
 
-  playBombExplosionSound() {
-    this.bombSounds = [this.game.audio.buh, this.game.audio.dzh];
-    this.bombSounds[Math.floor(Math.random() * this.bombSounds.length)].play();
-  }
-
   calculateStartingPosition(playerId, playerPositions) {
     return playerPositions[playerId % playerPositions.length];
   }
@@ -361,7 +360,7 @@ export default class Main extends Phaser.State {
 
     Object.keys(this.players).forEach((k) => {
       this.game.physics.arcade.overlap(this.players[k], this.bonuses, (player, bonus) => {
-	this.game.audio.stanami.play();
+	this.sound.playBonuses();
         bonus.addToPlayer(player);
       });
       this.physics.arcade.collide(this.players[k], this.stonesLayer);
@@ -381,7 +380,7 @@ export default class Main extends Phaser.State {
   }
 
   gameOver() {
-    this.game.audio.stanamilo6i4ko.play();
+    this.sound.playDeath();
     Client.emitGameOver();
     this.game.state.start('GameOver');
   }

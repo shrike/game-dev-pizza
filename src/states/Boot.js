@@ -18,7 +18,7 @@ export default class Boot extends Phaser.State {
     players.players.forEach(player => {
       player.colors.forEach(color => {
         this.load.spritesheet(`player-${player.name}-${color}`, `assets/${player.name}-${color}.png`, 64, 64);
-      })
+      });
     });
 
     this.load.image('bomb', 'assets/bomb.png');
@@ -36,22 +36,28 @@ export default class Boot extends Phaser.State {
     // loading audio with Phaser does not work for some reason
     this.game.audio = {};
     this.game.audio.background = new Audio('assets/background.wav');
-    this.game.audio.nie = new Audio('assets/nienienienie.wav');
-    this.game.audio.buh = new Audio('assets/buhhhhhhh.wav');
-    this.game.audio.dzh = new Audio('assets/dzhhhh.wav');
-    this.game.audio.nimogapove4e = new Audio('assets/nimogapove4e.wav');
-    this.game.audio.sekname = new Audio('assets/sekname.wav');
-    this.game.audio.stanami = new Audio('assets/stanami.wav');
-    this.game.audio.stanamilo6i4ko = new Audio('assets/stanamilo6i4ko.wav');
+
+    this.game.audio.bombExpld1 = new Audio('assets/bombExpld1.wav');
+    this.game.audio.bombExpld2 = new Audio('assets/bombExpld2.wav');
+    this.game.audio.bombExpld3 = new Audio('assets/bombExpld3.wav');
+    this.game.audio.bombExpld4 = new Audio('assets/bombExpld4.wav');
+
+    this.game.audio.death1 = new Audio('assets/death1.wav');
+    this.game.audio.death2 = new Audio('assets/death2.wav');
+    this.game.audio.death3 = new Audio('assets/death3.wav');
+    this.game.audio.death4 = new Audio('assets/death4.wav');
+    this.game.audio.death5 = new Audio('assets/death5.wav');
+
+    this.game.audio.bonus1 = new Audio('assets/bonus1.wav');
+    this.game.audio.bonus2 = new Audio('assets/bonus2.wav');
+    this.game.audio.bonus3 = new Audio('assets/bonus3.wav');
+    this.game.audio.bonus4 = new Audio('assets/bonus4.wav');
+    this.game.audio.bonus5 = new Audio('assets/bonus5.wav');
+
+    this.game.audio.move1 = new Audio('assets/move1.wav');
+    this.game.audio.move2 = new Audio('assets/move2.wav');
 
     this.game.audio.background.loop = true;
-    this.game.audio.nie.loop = false;
-    this.game.audio.buh.loop = false;
-    this.game.audio.dzh.loop = false;
-    this.game.audio.nimogapove4e.loop = false;
-    this.game.audio.sekname.loop = false;
-    this.game.audio.stanami.loop = false;
-    this.game.audio.stanamilo6i4ko.loop = false;
 
     // Play here, so that the buttons can set the correct image
     this.game.audio.background.play();

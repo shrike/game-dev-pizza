@@ -100,7 +100,6 @@ export default class Player extends Phaser.Sprite {
   turn(direction) {
 
     if (this.turning || !this.canTurn(direction) || direction === this.current) {
-      this.game.audio.nimogapove4e.play();
       return;
     }
 
