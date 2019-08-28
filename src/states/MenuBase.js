@@ -96,7 +96,7 @@ export default class MenuBase extends Phaser.State {
 
   updatePlayersInView(players) {
 
-    if (this.state.current !== this.constructor.name) {
+    if (!this.state || this.state.current !== this.constructor.name) {
       return;
     }
 
