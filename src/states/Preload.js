@@ -34,7 +34,7 @@ export default class Preload extends Phaser.State {
     this.game.plugins.add(WebpackLoader, AssetManifest, postfix)
       .load()
       .then(() => {
-        this.game.state.start('MainMenu');
+        this.game.state.start('Settings');
       });
   }
 

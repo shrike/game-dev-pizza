@@ -35,6 +35,8 @@ export default class Room extends MenuBase {
     
     this.addConnInfo();
 
+    this.updatePlayersInView(this.game.players);
+
     new BackgroundMusicButton({
       x: this.game.world.width - 42,
       y: 10,
@@ -78,9 +80,10 @@ export default class Room extends MenuBase {
       
       console.log('New player joined... ', player);
       this.game.players[player.id] = player;
-      this.txt.text = `Players: ${Object.keys(this.game.players).length}`
+      this.txt.text = `Players: ${Object.keys(this.game.players).length}`;
+      this.addPlayerToView(player);
     });
-    ``
+
     Client.socket.on("gameStarted", (map) => {
       console.log("Received 'gameStarted'", map.name);
       this.game.map = map;
@@ -88,11 +91,5 @@ export default class Room extends MenuBase {
     });
     
     this.stateText.visible = true;
-  }
-  
-  addConnInfo() {
-    const text = "Players: ";
-    this.txt = this.game.add.text(
-      this.game.world.width-200, this.game.world.height-100, text, this.style());
   }
 }

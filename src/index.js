@@ -2,6 +2,7 @@ import 'core-js/shim';
 import Stats from 'stats.js';
 import Boot from './states/Boot';
 import Preload from './states/Preload';
+import Settings from './states/Settings';
 import Main from './states/Main';
 import GameOver from './states/GameOver';
 import MainMenu from './states/MainMenu';
@@ -32,6 +33,7 @@ class Game extends Phaser.Game {
     // Setup the different game states.
     this.state.add('Boot', Boot, false);
     this.state.add('Preload', Preload, false);
+    this.state.add('Settings', Settings, false);
     this.state.add('Main', Main, false);
     this.state.add('GameOver', GameOver, false);
     this.state.add('MainMenu', MainMenu, false);

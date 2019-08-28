@@ -11,8 +11,7 @@ export default class MainMenu extends MenuBase {
 
     Client.socket.on("players", (players) => {
 
-      console.log('Updating players... ', players);
-      this.txt.text = `Players: ${Object.keys(players).length}`
+      this.updatePlayersInView(players);
     });
 
     Client.socket.on("rooms", (rooms) => {
@@ -80,13 +79,6 @@ export default class MainMenu extends MenuBase {
 
   create() {
     this.stateText.visible = true;
-    Client.sendJoin();
-  }
-
-  addConnInfo() {
-    const text = "Players: ";
-    this.txt = this.game.add.text(
-      this.game.world.width-200, this.game.world.height-100, text, this.style());
   }
 
   addRoomBtn(room) {

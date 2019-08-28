@@ -154,6 +154,11 @@ function emitRoomJoined(socket, room) {
   });
 }
 
+function joinSuccessful(socket) {
+  log.info('Join successful; emitting the current player');
+  socket.emit('joinSuccessful', socket.player);
+}
+
 function handleNewPlayer(socket) {
 
   log.info("handleNewPlayer");
@@ -171,6 +176,7 @@ function handleNewPlayer(socket) {
   // sendNewPlayerToExisting(socket);
   emitPlayers();
   emitRooms(socket);
+  joinSuccessful(socket);
 
   socket.on('disconnect', () => {
     const room = server.rooms[socket.roomId];
@@ -219,6 +225,12 @@ function handleNewPlayer(socket) {
     io.in(roomId).emit('playerJoined', socket.player);
     // 2. Tell our current client it has successfully joined a room
     emitRoomJoined(socket, server.rooms[roomId]);
+  });
+
+  socket.on('settings', ({nickname}) => {
+    log.info('Received settings', {nickname});
+    socket.player.nickname = nickname;
+    emitPlayers();
   });
 }
 

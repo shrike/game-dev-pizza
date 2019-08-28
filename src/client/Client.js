@@ -23,6 +23,10 @@ Client.sendJoin = function() {
   Client.socket.emit('join');
 };
 
+Client.settings = function({nickname}) {
+  Client.socket.emit('settings', {nickname});
+};
+
 Client.startGame = function(map) {
   console.log(`Emitting startGame "${map.name}"`);
   Client.socket.emit('startGame', map);
