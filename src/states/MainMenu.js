@@ -83,7 +83,7 @@ export default class MainMenu extends MenuBase {
   }
 
   addRoomBtn(room) {
-    if (this.state.current === this.stateName) {
+    if (this.state && this.state.current === this.stateName) {
       this.rooms.push(this.addMenuOption('ROOM ' + room.id, () => {
         Client.sendJoinRoom(room.id);
       }));
