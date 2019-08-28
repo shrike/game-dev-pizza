@@ -4,6 +4,7 @@ export default class MenuBase extends Phaser.State {
   
   constructor() {
     super();
+    this.stateName = "MenuBase";
     this.addConnInfo = this.addConnInfo.bind(this);
     this.addMenuOption = this.addMenuOption.bind(this);
     this.addPlayerOption = this.addPlayerOption.bind(this);
@@ -96,7 +97,7 @@ export default class MenuBase extends Phaser.State {
 
   updatePlayersInView(players) {
 
-    if (!this.state || this.state.current !== this.constructor.name) {
+    if (!this.state || this.state.current !== this.stateName) {
       return;
     }
 

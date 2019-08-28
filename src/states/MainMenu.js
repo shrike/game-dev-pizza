@@ -7,6 +7,7 @@ export default class MainMenu extends MenuBase {
   constructor() {
     super();
 
+    this.stateName = "MainMenu";
     this.rooms = [];
 
     Client.socket.on("players", (players) => {
@@ -82,7 +83,7 @@ export default class MainMenu extends MenuBase {
   }
 
   addRoomBtn(room) {
-    if (this.state.current === this.constructor.name) {
+    if (this.state.current === this.stateName) {
       this.rooms.push(this.addMenuOption('ROOM ' + room.id, () => {
         Client.sendJoinRoom(room.id);
       }));

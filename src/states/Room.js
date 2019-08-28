@@ -7,6 +7,7 @@ export default class Room extends MenuBase {
   
   constructor() {
     super();
+    this.stateName = "Room";
   }
   
   preload() {
