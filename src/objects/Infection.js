@@ -16,7 +16,7 @@ export default class Infection extends Phaser.Sprite {
       x,
       y,
       key,
-      frame,
+      frame
     );
 
     this.game.add.existing(this);
