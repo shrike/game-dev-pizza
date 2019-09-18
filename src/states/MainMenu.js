@@ -40,8 +40,9 @@ export default class MainMenu extends MenuBase {
   }
 
   updateRooms(rooms) {
-    if (this.state && this.state.current === this.stateName) {
-      this.cachedRooms = rooms;
+    this.cachedRooms = rooms;
+
+    if (!this.isCurrentState()) {
       return;
     }
 
@@ -90,12 +91,14 @@ export default class MainMenu extends MenuBase {
 
   create() {
     super.create();
-    this.updateRooms(this.cachedRooms);
+    if (this.cachedRooms) {
+      this.updateRooms(this.cachedRooms);
+    }
     this.stateText.visible = true;
   }
 
   addRoomBtn(room) {
-    if (this.state && this.state.current === this.stateName) {
+    if (this.isCurrentState()) {
       this.rooms.push(this.addMenuOption('ROOM ' + room.id, () => {
         Client.sendJoinRoom(room.id);
       }));

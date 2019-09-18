@@ -96,9 +96,9 @@ export default class MenuBase extends Phaser.State {
   }
 
   updatePlayersInView(players) {
+    this.cachedPlayers = players;
 
-    if (!this.state || this.state.current !== this.stateName) {
-      this.cachedPlayers = players;
+    if (!this.isCurrentState()) {
       return;
     }
 
@@ -125,5 +125,9 @@ export default class MenuBase extends Phaser.State {
     if (this.cachedPlayers) {
       this.updatePlayersInView(this.cachedPlayers);
     }
+  }
+
+  isCurrentState() {
+    return this.state && this.state.current === this.stateName;
   }
 }
