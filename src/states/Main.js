@@ -3,6 +3,7 @@ import Player from '../objects/Player';
 import BonusBomb from '../objects/BonusBomb';
 import BonusFlame from '../objects/BonusFlame';
 import BonusSpeed from '../objects/BonusSpeed';
+import BombInfectionBonus from '../objects/BombInfectBonus';
 import { Bomb } from '../objects/Bomb';
 import Client from '../client/Client';
 import players from '../generated/Players';
@@ -26,6 +27,7 @@ export default class Main extends Phaser.State {
     this.playerDied = this.playerDied.bind(this);
     this.addPlayer = this.addPlayer.bind(this);
     this.showBomb = this.showBomb.bind(this);
+    this.addBomb = this.addBomb.bind(this);
     this.calculateStartingPosition = this.calculateStartingPosition.bind(this);
     this.setCollision = this.setCollision.bind(this);
     this.sound = null;
@@ -33,8 +35,7 @@ export default class Main extends Phaser.State {
     this.explosions = [];
     this.bombs = [];
     this.bonuses = [];
-    this.bombPlaced = false;
-    this.aKey = null;
+    this.infections = [];
 
     Client.socket.on("bomb", this.showBomb);
     Client.socket.on("playerDied", this.playerDied);
@@ -84,6 +85,7 @@ export default class Main extends Phaser.State {
     const otherPlayers = Object.keys(this.game.players)
       .filter((key) => key != 'me')
       .map((key) => this.game.players[key]);
+    this.aKey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
     this.initAllPlayers(otherPlayers);
 
     this.sound = new Sound({game: this.game});
@@ -122,6 +124,7 @@ export default class Main extends Phaser.State {
         cursors: null,
         id: player.id,
         isPlayerLocal: false,
+        addBomb: this.addBomb,
       });
 
       this.physics.arcade.enable(newPlayer);
@@ -153,6 +156,7 @@ export default class Main extends Phaser.State {
       cursors: null,
       id: player.id,
       isPlayerLocal: false,
+      addBomb: this.addBomb,
     });
 
     this.physics.arcade.enable(newPlayer);
@@ -178,13 +182,12 @@ export default class Main extends Phaser.State {
       cursors: this.input.keyboard.createCursorKeys(),
       id: player.id,
       isPlayerLocal: true,
+      addBomb: this.addBomb,
     });
 
     this.physics.arcade.enable(this.player);
 
     this.players[player.id] = this.player;
-
-    this.aKey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
   }
 
   /**
@@ -272,6 +275,14 @@ export default class Main extends Phaser.State {
         return;
       }
     }
+
+    for (let i = 0; i < this.game.map.infectionTiles.length; i++) {
+      const infection = this.game.map.infectionTiles[i];
+      if (infection.x === tileX && infection.y === tileY){
+        this.addInfection(tileX, tileY, infection.bonusType);
+        return;
+      }
+    }
   }
 
   addBonus(tileX, tileY, bonusType) {
@@ -291,6 +302,20 @@ export default class Main extends Phaser.State {
     this.bonuses.push(bonus);
 }
 
+  addInfection(tileX, tileY, infectionType) {
+    const infectionTypes = [
+      BombInfectionBonus,
+    ];
+
+    const bonus = new infectionTypes[infectionType]({
+      game: this.game,
+      x: this.map.gridToPixelCoord(tileX),
+      y: this.map.gridToPixelCoord(tileY),
+    });
+    this.physics.arcade.enable(bonus);
+
+    this.infections.push(bonus);
+  }
   /**
    * Resize the game to fit the window.
    */
@@ -354,29 +379,53 @@ export default class Main extends Phaser.State {
    */
   update() {
 
-    this.game.physics.arcade.overlap(this.player, this.explosions, () => {
-      this.gameOver();
-    });
+    // this.game.physics.arcade.overlap(this.player, this.explosions, () => {
+    //   this.gameOver();
+    // });
 
     Object.keys(this.players).forEach((k) => {
+
       this.game.physics.arcade.overlap(this.players[k], this.bonuses, (player, bonus) => {
-	this.sound.playBonuses();
+	    this.sound.playBonuses();
         bonus.addToPlayer(player);
       });
+
+      this.game.physics.arcade.overlap(this.players[k], this.infections, (player, infection) => {
+        player.addInfection(infection);
+      });
+
+      this.game.physics.arcade.overlap(this.players[k], this.players, (player1, player2) => {
+        if (player1.id !== player2.id) {
+
+          console.log(player1.infections, player2.infections);
+
+          player2.getInfections().forEach((inf) => {
+            if (inf.isActive) {
+              console.log('pre infection player1');
+              if (!player1.infections.has(inf.uniqueType) || !player1.infections.get(inf.uniqueType).isActive) {
+                console.log('infection player1');
+                player1.addInfection(inf);
+              }
+            }
+          });
+
+          player1.getInfections().forEach((inf) => {
+            if (inf.isActive) {
+              console.log('pre infection player2');
+              if (!player2.infections.has(inf.uniqueType) || !player2.infections.get(inf.uniqueType).isActive) {
+                console.log('infection player2');
+                player2.addInfection(inf);
+              }
+            }
+          });
+
+        }
+      });
+
       this.physics.arcade.collide(this.players[k], this.stonesLayer);
       this.physics.arcade.collide(this.players[k], this.bricksLayer);
       this.physics.arcade.collide(this.players[k], this.bombs);
     });
-
-    if (this.aKey && this.aKey.isDown && !this.bombPlaced && this.player.bombsAvailable > 0) {
-      const bomb = this.addBomb(this.player.x, this.player.y, this.player.id);
-      this.player.bombsAvailable -= 1;
-      bomb.events.onDestroy.add(() => this.player.bombsAvailable += 1, this);
-      this.bombPlaced = true;
-    }
-    if (this.aKey && this.aKey.isUp) {
-      this.bombPlaced = false;
-    }
   }
 
   gameOver() {

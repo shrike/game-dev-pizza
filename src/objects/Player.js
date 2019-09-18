@@ -1,12 +1,13 @@
 /* eslint object-curly-newline: ["error", "never"] */
 /* eslint-env es6 */
 import Client from '../client/Client';
+import BombInfectionBonus, {type as spamBombsType}  from '../objects/BombInfectBonus';
 /**
  * Setup and control base player.
  */
 export default class Player extends Phaser.Sprite {
 
-  constructor({game, map, isTileBrickFree, x, y, key, frame, cursors, id, isPlayerLocal}) {
+  constructor({game, map, isTileBrickFree, x, y, key, frame, cursors, id, isPlayerLocal, addBomb}) {
     super(game, x, y, key, frame);
 
     this.map = map;
@@ -33,9 +34,15 @@ export default class Player extends Phaser.Sprite {
     this.pressedButtons = [false, false, false, false, false];
     this.buttonsQueue = [];
     this.current = Phaser.DOWN;
+    this.bombPlaced = false;
+    this.aKey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
+    this.addBomb = addBomb;
+    this.infections = new Map();
+    this._bombsAvailable = 1;
+
 
     this.flameLength = 1;
-    this.bombsAvailable = 1;
+
 
     Client.socket.on("position", (position) => {
       if (id === position.playerId) {
@@ -79,23 +86,24 @@ export default class Player extends Phaser.Sprite {
   }
 
   canTurn(direction) {
-    const left = this.map.getTileWorldXY(this.left - 1, this.centerY);
-    const right = this.map.getTileWorldXY(this.right + 1, this.centerY);
-    const top = this.map.getTileWorldXY(this.centerX, this.top - 1);
-    const bottom = this.map.getTileWorldXY(this.centerX, this.bottom + 1);
+    const left = this.left;
+    const right = this.right;
+    const top = this.top;
+    const bottom = this.bottom;
 
     if (direction === Phaser.LEFT) {
-      return this.isTileBrickFree(left.x, left.y);
+      return this.isTileBrickFree(left.x - 1, left.y);
     } else if (direction === Phaser.RIGHT) {
-      return this.isTileBrickFree(right.x, right.y);
+      return this.isTileBrickFree(right.x + 1, right.y);
     } else if (direction === Phaser.UP) {
-      return this.isTileBrickFree(top.x, top.y);
+      return this.isTileBrickFree(top.x, top.y + 1);
     } else if (direction === Phaser.DOWN) {
-      return this.isTileBrickFree(bottom.x, bottom.y);
+      return this.isTileBrickFree(bottom.x, bottom.y - 1);
     }
 
     return false;
   }
+
 
   turn(direction) {
 
@@ -108,9 +116,6 @@ export default class Player extends Phaser.Sprite {
       this.body.y = this.marker.y * this.map.gridsize;
     }
 
-    this.turning = true;
-    this.turned = true;
-    this.turning = false;
     this.current = direction;
 
     this.animate();
@@ -129,8 +134,7 @@ export default class Player extends Phaser.Sprite {
   }
 
   move() {
-
-    var lastPressedDirection = this.buttonsQueue[this.buttonsQueue.length - 1];
+    const lastPressedDirection = this.buttonsQueue[this.buttonsQueue.length - 1];
 
     if (this.turnAvailable(lastPressedDirection)) {
       this.turn(lastPressedDirection);
@@ -249,6 +253,17 @@ export default class Player extends Phaser.Sprite {
   update() {
     // Only the local player can be controlled via the keyboard
     if (this.isPlayerLocal) {
+
+      if (((this.aKey && this.aKey.isDown && !this.bombPlaced) || this.isSpammer) && this.bombsAvailable > 0) {
+        const bomb = this.addBomb(this.x, this.y, this.id);
+        this.bombsAvailable -= 1;
+        bomb.events.onDestroy.add(() => this.bombsAvailable += 1, this);
+        this.bombPlaced = !this.isSpammer;
+      }
+      if (this.aKey && this.aKey.isUp) {
+        this.bombPlaced = false;
+      }
+
       this.checkButtons();
       this.calcGridPosition();
       this.move();
@@ -266,5 +281,33 @@ export default class Player extends Phaser.Sprite {
 
   increaseSpeed() {
     this.speed += 0.5 * this.initialSpeed;
+  }
+
+  addInfection(infection) {
+    infection.infectPlayer();
+
+    if (!this.infections.has(infection.uniqueType) || !this.infections.get(infection.uniqueType).isActive) {
+      this.infections.set(infection.uniqueType, infection);
+    }
+  }
+
+  getInfections() {
+    return this.infections;
+  }
+
+  get bombsAvailable() {
+    // if (this.infections.has(spamBombsType) && this.infections.get(spamBombsType).isActive) {
+    //   return 10;
+    // }
+
+    return this._bombsAvailable;
+  }
+
+  set bombsAvailable(n) {
+    this._bombsAvailable = n;
+  }
+
+  get isSpammer() {
+    return this.infections.has(spamBombsType) && this.infections.get(spamBombsType).isActive;
   }
 }
