@@ -296,10 +296,6 @@ export default class Player extends Phaser.Sprite {
   }
 
   get bombsAvailable() {
-    // if (this.infections.has(spamBombsType) && this.infections.get(spamBombsType).isActive) {
-    //   return 10;
-    // }
-
     return this._bombsAvailable;
   }
 

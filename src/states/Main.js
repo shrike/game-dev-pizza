@@ -362,7 +362,7 @@ export default class Main extends Phaser.State {
         fire.body.setSize(50,50,7,7);
         this.explosions.push(fire);
       },
-      flameLength
+      flameLength,
     });
     this.game.physics.enable(bomb);
 
@@ -379,9 +379,9 @@ export default class Main extends Phaser.State {
    */
   update() {
 
-    // this.game.physics.arcade.overlap(this.player, this.explosions, () => {
-    //   this.gameOver();
-    // });
+    this.game.physics.arcade.overlap(this.player, this.explosions, () => {
+      this.gameOver();
+    });
 
     Object.keys(this.players).forEach((k) => {
 
@@ -397,13 +397,9 @@ export default class Main extends Phaser.State {
       this.game.physics.arcade.overlap(this.players[k], this.players, (player1, player2) => {
         if (player1.id !== player2.id) {
 
-          console.log(player1.infections, player2.infections);
-
           player2.getInfections().forEach((inf) => {
             if (inf.isActive) {
-              console.log('pre infection player1');
               if (!player1.infections.has(inf.uniqueType) || !player1.infections.get(inf.uniqueType).isActive) {
-                console.log('infection player1');
                 player1.addInfection(inf);
               }
             }
@@ -411,9 +407,7 @@ export default class Main extends Phaser.State {
 
           player1.getInfections().forEach((inf) => {
             if (inf.isActive) {
-              console.log('pre infection player2');
               if (!player2.infections.has(inf.uniqueType) || !player2.infections.get(inf.uniqueType).isActive) {
-                console.log('infection player2');
                 player2.addInfection(inf);
               }
             }
