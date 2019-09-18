@@ -11,12 +11,11 @@ export default class Room extends MenuBase {
   }
 
   preload() {
-    const gameOverText = 'ROOM X';
+    const roomName = `ROOM ${this.game.room.id}`;
     const textStyle = {font: '50px 8BitCrash', fill: '#F2F2F2', align: 'center'};
 
-    this.stateText = this.game.add.text(
-      this.game.world.centerX, this.game.world.centerY, gameOverText, textStyle);
-
+    this.stateText = this.game.add.text(this.game.world.centerX, 100, roomName, textStyle);
+      
     // Position text at the center
     this.stateText.anchor.setTo(0.5);
 
