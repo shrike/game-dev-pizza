@@ -8,7 +8,7 @@ export default class BombInfectionBonus extends Infection {
       game: game,
       x: x,
       y: y,
-      key: 'bonus-bomb',
+      key: 'bonus-infection',
     });
   }
   get uniqueType() {
