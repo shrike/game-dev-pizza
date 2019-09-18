@@ -16,16 +16,9 @@ export default class MainMenu extends MenuBase {
     });
 
     Client.socket.on("rooms", (rooms) => {
-      console.log("Received 'rooms'", rooms);
-      this.rooms.forEach(room => {
-        this.game.world.remove(room);
-      });
-      if (rooms) {
-        rooms.forEach(room => {
-          this.addRoomBtn(room);
-        });
-      }
-    });
+
+      this.updateRooms(rooms);
+   });
 
     Client.socket.on("roomCreated", (room) => {
       console.log("Received 'roomCreated'", room);
@@ -44,6 +37,23 @@ export default class MainMenu extends MenuBase {
         delete this.game.players[playerId];
       }
     });
+  }
+
+  updateRooms(rooms) {
+    if (this.state && this.state.current === this.stateName) {
+      this.cachedRooms = rooms;
+      return;
+    }
+
+    console.log("Received 'rooms'", rooms);
+    this.rooms.forEach(room => {
+      this.game.world.remove(room);
+    });
+    if (rooms) {
+      rooms.forEach(room => {
+        this.addRoomBtn(room);
+      });
+    }
   }
 
   preload() {
@@ -79,6 +89,8 @@ export default class MainMenu extends MenuBase {
   }
 
   create() {
+    super.create();
+    updateRooms(this.cachedRooms);
     this.stateText.visible = true;
   }
 

@@ -98,6 +98,7 @@ export default class MenuBase extends Phaser.State {
   updatePlayersInView(players) {
 
     if (!this.state || this.state.current !== this.stateName) {
+      this.cachedPlayers = players;
       return;
     }
 
@@ -117,6 +118,12 @@ export default class MenuBase extends Phaser.State {
         const txt = this.addPlayerOption(player.nickname);
         this.playerOptions.push(txt);
       });
+    }
+  }
+
+  create() {
+    if (this.cachedPlayers) {
+      this.updatePlayersInView(this.cachedPlayers);
     }
   }
 }

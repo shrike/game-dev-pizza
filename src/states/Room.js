@@ -97,6 +97,8 @@ export default class Room extends MenuBase {
 
 
   create() {
+    super.create();
+
     Client.socket.on("playerJoined", (player) => {
 
       console.log('New player joined... ', player);
