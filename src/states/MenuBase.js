@@ -70,11 +70,13 @@ export default class MenuBase extends Phaser.State {
   }
 
   addPlayerOption(nickname) {
-    const optionStyle = this.style();
-    optionStyle.font = '30px 8BitCrash';
-    const txt = this.game.add.text(this.game.world.width - 300, (this.playerCount * 40) + 100, nickname, optionStyle);
-    this.playerCount += 1;
-    return txt;
+    if (this.isCurrentState()) {
+      const optionStyle = this.style();
+      optionStyle.font = '30px 8BitCrash';
+      const txt = this.game.add.text(this.game.world.width - 300, (this.playerCount * 40) + 100, nickname, optionStyle);
+      this.playerCount += 1;
+      return txt;
+    }
   }
 
   removePlayerOptions(playerOptions) {
