@@ -332,10 +332,26 @@ export default class Main extends Phaser.State {
    *
    * @param x
    * @param y
+   * @param playerId
+   * @return {Bomb | undefined}
    */
   addBomb(x, y, playerId) {
+
+    const hasBomb = this.bombs.some((bomb) => {
+      if (bomb.x === x && bomb.y === y) {
+        return true;
+      }
+
+      return false;
+    });
+
+    if (hasBomb) {
+      return;
+    }
+
     const bomb = this.showBomb({x, y, playerId});
     Client.emitAddBomb(x, y, playerId);
+
     return bomb;
   }
 

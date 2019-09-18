@@ -256,9 +256,11 @@ export default class Player extends Phaser.Sprite {
 
       if (((this.aKey && this.aKey.isDown && !this.bombPlaced) || this.isSpammer) && this.bombsAvailable > 0) {
         const bomb = this.addBomb(this.x, this.y, this.id);
-        this.bombsAvailable -= 1;
-        bomb.events.onDestroy.add(() => this.bombsAvailable += 1, this);
-        this.bombPlaced = !this.isSpammer;
+        if (bomb) {
+          this.bombsAvailable -= 1;
+          bomb.events.onDestroy.add(() => this.bombsAvailable += 1, this);
+          this.bombPlaced = !this.isSpammer;
+        }
       }
       if (this.aKey && this.aKey.isUp) {
         this.bombPlaced = false;
