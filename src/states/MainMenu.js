@@ -90,7 +90,7 @@ export default class MainMenu extends MenuBase {
 
   create() {
     super.create();
-    updateRooms(this.cachedRooms);
+    this.updateRooms(this.cachedRooms);
     this.stateText.visible = true;
   }
 
