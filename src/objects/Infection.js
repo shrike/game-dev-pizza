@@ -1,6 +1,7 @@
 export const type = 'harmless-virus';
 
 export default class Infection extends Phaser.Sprite {
+
   /**
    * @param game
    * @param map
@@ -15,16 +16,13 @@ export default class Infection extends Phaser.Sprite {
       x,
       y,
       key,
-      frame
+      frame,
     );
 
     this.game.add.existing(this);
     this.anchor.setTo(0.5);
     this._isActive = true;
-
-    window.setTimeout(() => {
-      this._isActive = false;
-    }, 20000);
+    this.timer = null;
   }
 
   get uniqueType() {
@@ -32,6 +30,12 @@ export default class Infection extends Phaser.Sprite {
   }
 
   infectPlayer() {
+    if (!this.timer) {
+      this.timer = window.setTimeout(() => {
+        this._isActive = false;
+        this.timer = null;
+      }, 20000);
+    }
     this.destroy();
   }
 
