@@ -1,4 +1,5 @@
 import players from '../generated/Players';
+import sound from '../objects/Sound';
 
 /**
  * Setup the pre-game boot sequence.
@@ -57,6 +58,9 @@ export default class Boot extends Phaser.State {
 
     this.game.audio.move1 = new Audio('assets/move1.wav');
     this.game.audio.move2 = new Audio('assets/move2.wav');
+
+    // load the sounds in the 'sound' singleton
+    sound.init(this.game);
 
     this.game.audio.background.loop = true;
 

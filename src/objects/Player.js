@@ -1,6 +1,7 @@
 /* eslint object-curly-newline: ["error", "never"] */
 /* eslint-env es6 */
 import Client from '../client/Client';
+import sound from '../objects/Sound';
 import BombInfectionBonus, {type as spamBombsType}  from '../objects/BombInfectBonus';
 /**
  * Setup and control base player.
@@ -108,6 +109,7 @@ export default class Player extends Phaser.Sprite {
   turn(direction) {
 
     if (this.turning || !this.canTurn(direction) || direction === this.current) {
+      sound.playMoves();
       return;
     }
 

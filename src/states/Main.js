@@ -7,7 +7,7 @@ import BombInfectionBonus from '../objects/BombInfectBonus';
 import { Bomb } from '../objects/Bomb';
 import Client from '../client/Client';
 import players from '../generated/Players';
-import Sound from '../objects/Sound';
+import sound from '../objects/Sound';
 import BackgroundMusicButton from '../objects/BackgroundMusicButton';
 
 /**
@@ -88,7 +88,8 @@ export default class Main extends Phaser.State {
     this.aKey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
     this.initAllPlayers(otherPlayers);
 
-    this.sound = new Sound({game: this.game});
+    // init the sound
+    this.sound = sound;
 
     // Setup listener for window resize.
     // window.addEventListener('resize', throttle(this.resize.bind(this), 50), false);
